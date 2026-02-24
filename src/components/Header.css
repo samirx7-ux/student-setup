@@ -1,0 +1,35 @@
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--header-h) + var(--sat));
+    padding-top: var(--sat);
+    padding-left: 16px;
+    padding-right: 16px;
+    background: var(--header-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    z-index: 100;
+}
+
+.header-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.back-btn {
+    background: transparent;
+    border: none;
+    font-size: 32px;
+    color: var(--blue);
+    cursor: pointer;
+    padding: 0 12px 0 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}

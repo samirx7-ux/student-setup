@@ -1,0 +1,65 @@
+/* ============================================
+   iOS Design System Variables
+   ============================================ */
+:root {
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sat: env(safe-area-inset-top, 0px);
+
+    /* Light Mode */
+    --bg: #F2F2F7;
+    --surface: #FFFFFF;
+    --surface2: #EFEFF4;
+    --text-primary: #000000;
+    --text-secondary: rgba(60, 60, 67, 0.6);
+    --text-tertiary: rgba(60, 60, 67, 0.3);
+    --border: rgba(60, 60, 67, 0.18);
+    --divider: rgba(60, 60, 67, 0.29);
+    --header-bg: rgba(255, 255, 255, 0.85);
+    --tab-bg: rgba(255, 255, 255, 0.92);
+
+    /* Accent Colors */
+    --blue: #007AFF;
+    --purple: #AF52DE;
+    --orange: #FF9500;
+    --red: #FF3B30;
+    --green: #34C759;
+    --teal: #32ADE6;
+    --indigo: #5856D6;
+
+    /* Sizing */
+    --header-h: 56px;
+    --tab-h: 83px;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #000000;
+        --surface: #1C1C1E;
+        --surface2: #2C2C2E;
+        --text-primary: #FFFFFF;
+        --text-secondary: rgba(235, 235, 245, 0.6);
+        --text-tertiary: rgba(235, 235, 245, 0.3);
+        --border: rgba(84, 84, 88, 0.65);
+        --divider: rgba(84, 84, 88, 0.65);
+        --header-bg: rgba(28, 28, 30, 0.88);
+        --tab-bg: rgba(28, 28, 30, 0.92);
+
+        --blue: #0A84FF;
+        --purple: #BF5AF2;
+        --orange: #FF9F0A;
+        --red: #FF453A;
+        --green: #32D74B;
+
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.55);
+    }
+}

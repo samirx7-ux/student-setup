@@ -1,0 +1,267 @@
+/* Header Styles */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(56px + var(--sat));
+    padding-top: var(--sat);
+    background: var(--header-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 16px;
+    padding-right: 16px;
+    z-index: 100;
+    border-bottom: 0.5px solid var(--border-color);
+}
+
+.app-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 16px;
+}
+
+/* Bottom Tab Bar Styles */
+.bottom-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(83px + var(--sab));
+    padding-bottom: var(--sab);
+    background: var(--surface-color);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding-top: 8px;
+    z-index: 100;
+    border-top: 0.5px solid var(--border-color);
+    /* Subtle shadow at the top of the tab bar */
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    /* Default inactive color */
+    width: 64px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.tab-item ion-icon {
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+/* Filled icon visible only when active */
+.tab-item ion-icon[name]:not(.outline-icon) {
+    display: none;
+}
+
+.tab-item .outline-icon {
+    display: block;
+}
+
+.tab-item.active {
+    color: var(--accent-blue);
+}
+
+.tab-item.active ion-icon[name]:not(.outline-icon) {
+    display: block;
+}
+
+.tab-item.active .outline-icon {
+    display: none;
+}
+
+.tab-item span {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+/* Typography elements */
+.welcome-header h2 {
+    font-size: 34px;
+    /* iOS Large Title */
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.8px;
+    margin-bottom: 24px;
+}
+
+.welcome-header h2 span {
+    color: var(--accent-blue);
+}
+
+/* Base Form/Input Styles (for future use) */
+.search-bar {
+    background-color: var(--border-color);
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.search-bar ion-icon {
+    color: var(--text-secondary);
+    font-size: 20px;
+    margin-right: 8px;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 17px;
+    width: 100%;
+}
+
+.search-bar input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Base Cards */
+.card {
+    background: var(--surface-color);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+/* Card image styles */
+.card-img {
+    width: calc(100% + 32px);
+    margin: -16px -16px 16px -16px;
+    height: 140px;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+}
+
+.card-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    background: var(--bg-color);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Horizontal Scroll list (for recommendations) */
+.h-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.h-scroll::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+/* Horizontal Scroll Cards */
+.h-scroll .card {
+    min-width: 240px;
+    margin-bottom: 0;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 24px 0 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title .see-all {
+    font-size: 14px;
+    color: var(--accent-blue);
+    font-weight: 500;
+}
+
+/* Specific component: Skill Card */
+.skill-card {
+    display: flex;
+    align-items: center;
+    background: var(--surface-color);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.skill-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    font-size: 24px;
+    color: white;
+}
+
+.skill-info {
+    flex: 1;
+}
+
+.skill-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.skill-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}

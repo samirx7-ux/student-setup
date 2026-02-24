@@ -1,0 +1,105 @@
+.filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.filter-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.filter-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.result-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.program-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    margin-bottom: 14px;
+    display: flex;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s;
+}
+
+.program-card:active {
+    transform: scale(0.98);
+}
+
+.pc-accent {
+    width: 5px;
+    flex-shrink: 0;
+}
+
+.pc-body {
+    padding: 14px 16px;
+    flex: 1;
+}
+
+.pc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.pc-level-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.pc-duration {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.pc-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.pc-eligibility {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.pc-exams {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state p {
+    margin-top: 12px;
+    font-size: 15px;
+}

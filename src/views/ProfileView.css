@@ -1,0 +1,80 @@
+.profile-hero {
+    text-align: center;
+    padding: 16px 0 28px;
+}
+
+.profile-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 42px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white;
+    font-size: 36px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+}
+
+.profile-name {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.profile-meta {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.profile-interests {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.skill-prog-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--divider);
+    cursor: pointer;
+}
+
+.skill-prog-row:last-child {
+    border-bottom: none;
+}
+
+.spr-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.spr-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.spr-cat {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.spr-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.spr-pct {
+    font-size: 13px;
+    font-weight: 600;
+}

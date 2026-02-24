@@ -1,0 +1,40 @@
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-body {
+    flex: 1;
+    overflow: hidden;
+    padding-top: calc(var(--header-h) + var(--sat));
+    padding-bottom: calc(var(--tab-h) + var(--sab));
+}
+
+/* Chatbot FAB */
+.chatbot-fab {
+    position: fixed;
+    bottom: calc(var(--tab-h) + var(--sab) + 16px);
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 26px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white;
+    font-size: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+    z-index: 150;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.chatbot-fab:active {
+    transform: scale(0.91);
+}
