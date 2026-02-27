@@ -1,0 +1,327 @@
+/* ── Hero ─────────────────────────────────────────────────── */
+.analytics-hero {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.35s ease both;
+}
+
+.ring-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.ring-svg {
+    display: block;
+}
+
+.ring-fill {
+    transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ring-pct {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+.ring-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.hero-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.hero-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.hero-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.hchip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.hchip.green  { background: rgba(52,199,89,0.12);  color: var(--green); }
+.hchip.blue   { background: rgba(0,122,255,0.12);  color: var(--blue); }
+.hchip.grey   { background: var(--surface2);       color: var(--text-secondary); }
+
+/* ── Streak Row ───────────────────────────────────────────── */
+.streak-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.35s ease 0.05s both;
+}
+
+.streak-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 8px 12px;
+    text-align: center;
+}
+
+.streak-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.streak-num {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--blue);
+    line-height: 1;
+    margin-bottom: 3px;
+}
+
+.streak-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+/* ── Analytics Card (shared container) ───────────────────── */
+.analytics-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+/* ── Skill rows ───────────────────────────────────────────── */
+.skill-analytics-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border-bottom: 0.5px solid var(--divider);
+    cursor: pointer;
+    transition: background 0.15s;
+    animation: fadeUp 0.3s ease both;
+    gap: 12px;
+}
+
+.skill-analytics-row:last-child {
+    border-bottom: none;
+}
+
+.skill-analytics-row:active {
+    background: var(--surface2);
+}
+
+.sar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.sar-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.sar-name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+.sar-cat {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.sar-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.sar-pct {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.sar-bar-track {
+    width: 72px;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.sar-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Category bars ────────────────────────────────────────── */
+.cat-bar-row {
+    margin-bottom: 14px;
+}
+
+.cat-bar-row:last-child {
+    margin-bottom: 0;
+}
+
+.cat-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.cat-bar-count {
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.cat-fill {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ── Saved summary ────────────────────────────────────────── */
+.saved-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.ss-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    animation: fadeUp 0.35s ease 0.15s both;
+}
+
+.ss-card:active {
+    transform: scale(0.97);
+}
+
+.ss-num {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.ss-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.ss-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+.analytics-empty {
+    text-align: center;
+    padding: 32px 20px 48px;
+    animation: fadeUp 0.35s ease both;
+}
+
+.ae-icon {
+    font-size: 52px;
+    margin-bottom: 14px;
+}
+
+.analytics-empty h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.analytics-empty p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 260px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ae-btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 13px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.ae-btn:active {
+    opacity: 0.8;
+}
+
+/* ── Shared animations ────────────────────────────────────── */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
