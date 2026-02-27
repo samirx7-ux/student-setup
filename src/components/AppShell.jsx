@@ -7,6 +7,7 @@ import './AppShell.css';
 
 const titleMap = {
     '/home': 'Home',
+    '/search': 'Search',
     '/programs': 'Programs',
     '/universities': 'Universities',
     '/skills': 'Skills',
@@ -17,7 +18,6 @@ export default function AppShell() {
     const location = useLocation();
     const [chatOpen, setChatOpen] = useState(false);
 
-    // Check if we're on a detail page
     const segments = location.pathname.split('/');
     const isDetail = segments.length > 2 && segments[2];
     const rootPath = '/' + segments[1];
@@ -33,7 +33,6 @@ export default function AppShell() {
 
             <TabBar />
 
-            {/* Chatbot FAB */}
             <button
                 className="chatbot-fab"
                 onClick={() => setChatOpen(true)}
