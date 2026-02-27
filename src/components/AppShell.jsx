@@ -8,6 +8,7 @@ import './AppShell.css';
 const titleMap = {
     '/home': 'Home',
     '/search': 'Search',
+    '/analytics': 'My Progress',
     '/programs': 'Programs',
     '/universities': 'Universities',
     '/skills': 'Skills',
