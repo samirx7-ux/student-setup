@@ -10,6 +10,7 @@ const DEFAULT_USER = {
     interests: ["Technology", "Business"],
     savedUniversities: ["iitb", "bits"],
     savedPrograms: ["btech-cs", "mba"],
+    examAlerts: true,
     skillProgress: {
         "python": 45,
         "english": 30,
@@ -73,6 +74,10 @@ export function UserProvider({ children }) {
         setUserData(DEFAULT_USER);
     };
 
+    const toggleExamAlerts = () => {
+        setUserData(prev => ({ ...prev, examAlerts: !prev.examAlerts }));
+    };
+
     return (
         <UserContext.Provider value={{
             userData,
@@ -83,6 +88,7 @@ export function UserProvider({ children }) {
             isSavedProgram,
             updateProfile,
             resetUserData,
+            toggleExamAlerts,
         }}>
             {children}
         </UserContext.Provider>
