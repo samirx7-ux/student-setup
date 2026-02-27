@@ -25,23 +25,29 @@ export default function ProgramsView() {
 
                 <div className="search-bar">
                     <span>🔍</span>
-                    <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search by name or career…" />
+                    <input
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                        placeholder="Search by name or career…"
+                    />
                 </div>
 
-                {/* Level Filter */}
-                <div className="filter-row">
-                    {LEVELS.map(l => (
-                        <button
-                            key={l}
-                            className={`filter-btn ${level === l ? 'active' : ''}`}
-                            onClick={() => setLevel(l)}
-                        >
-                            {l}
-                        </button>
-                    ))}
+                {/* Scrollable filter row — no overflow on mobile */}
+                <div className="filter-scroll-wrapper">
+                    <div className="filter-row">
+                        {LEVELS.map(l => (
+                            <button
+                                key={l}
+                                className={`filter-btn ${level === l ? 'active' : ''}`}
+                                onClick={() => setLevel(l)}
+                            >
+                                {l}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <p className="result-count">{filtered.length} Programs</p>
+                <p className="result-count">{filtered.length} Program{filtered.length !== 1 ? 's' : ''}</p>
 
                 {filtered.map(p => (
                     <div
