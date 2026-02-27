@@ -1,10 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { universities, programs, skills, userData } from '../data/data';
+import { universities, programs, skills } from '../data/data';
+import { useUser } from '../context/UserContext';
 import './HomeView.css';
+
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning 🌅';
+    if (hour < 17) return 'Good afternoon ☀️';
+    if (hour < 21) return 'Good evening 🌆';
+    return 'Good night 🌙';
+}
 
 export default function HomeView() {
     const navigate = useNavigate();
+    const { userData } = useUser();
     const [query, setQuery] = useState('');
 
     const handleSearch = (e) => {
@@ -14,13 +24,16 @@ export default function HomeView() {
         }
     };
 
+    // Skills that have progress tracked
+    const trackedSkills = Object.entries(userData.skillProgress || {});
+
     return (
         <div className="view-scroll">
             <div className="container">
 
                 {/* Welcome */}
                 <div className="home-welcome">
-                    <p className="welcome-greeting">Good morning 👋</p>
+                    <p className="welcome-greeting">{getGreeting()}</p>
                     <h2 className="welcome-heading">
                         Hello, <span>{userData.name}!</span>
                     </h2>
@@ -37,18 +50,18 @@ export default function HomeView() {
                     />
                 </form>
 
-                {/* Quick Stats */}
+                {/* Quick Stats — now dynamic */}
                 <div className="stats-row">
                     <div className="stat-card">
-                        <div className="stat-num">8+</div>
+                        <div className="stat-num">{universities.length}</div>
                         <div className="stat-label">Universities</div>
                     </div>
                     <div className="stat-card">
-                        <div className="stat-num">8+</div>
+                        <div className="stat-num">{programs.length}</div>
                         <div className="stat-label">Programs</div>
                     </div>
                     <div className="stat-card">
-                        <div className="stat-num">10+</div>
+                        <div className="stat-num">{skills.length}</div>
                         <div className="stat-label">Skills</div>
                     </div>
                 </div>
@@ -85,7 +98,11 @@ export default function HomeView() {
                             <div className="uni-card-name">{u.name}</div>
                             <div className="uni-card-meta">{u.location}</div>
                             <div className="uni-card-rank">{u.ranking}</div>
-                            <div className="tag" style={{ marginTop: 8, background: u.type === 'Government' ? 'rgba(52,199,89,0.12)' : 'rgba(0,122,255,0.12)', color: u.type === 'Government' ? 'var(--green)' : 'var(--blue)' }}>
+                            <div className="tag" style={{
+                                marginTop: 8,
+                                background: u.type === 'Government' ? 'rgba(52,199,89,0.12)' : 'rgba(0,122,255,0.12)',
+                                color: u.type === 'Government' ? 'var(--green)' : 'var(--blue)'
+                            }}>
                                 {u.type}
                             </div>
                         </div>
@@ -97,7 +114,14 @@ export default function HomeView() {
                     Your Skills
                     <span className="see-all" onClick={() => navigate('/skills')}>See All</span>
                 </div>
-                {Object.entries(userData.skillProgress).slice(0, 3).map(([id, pct]) => {
+
+                {trackedSkills.length === 0 && (
+                    <div style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 16 }}>
+                        No skills tracked yet. Start a skill to see progress here!
+                    </div>
+                )}
+
+                {trackedSkills.slice(0, 3).map(([id, pct]) => {
                     const skill = skills.find(s => s.id === id);
                     if (!skill) return null;
                     return (
