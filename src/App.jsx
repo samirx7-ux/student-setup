@@ -10,6 +10,7 @@ import ProfileView from './views/ProfileView';
 import UniversityDetail from './views/UniversityDetail';
 import ProgramDetail from './views/ProgramDetail';
 import SkillDetail from './views/SkillDetail';
+import SearchView from './views/SearchView';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route element={<AppShell />}>
             <Route index element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<HomeView />} />
+            <Route path="/search" element={<SearchView />} />
             <Route path="/programs" element={<ProgramsView />} />
             <Route path="/programs/:id" element={<ProgramDetail />} />
             <Route path="/universities" element={<UniversitiesView />} />
