@@ -1,11 +1,14 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { universities } from '../data/data';
+import { useUser } from '../context/UserContext';
 import './DetailView.css';
 
 export default function UniversityDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { toggleSavedUniversity, isSavedUniversity } = useUser();
     const u = universities.find(u => u.id === id);
+    const saved = isSavedUniversity(id);
 
     if (!u) return (
         <div className="view-scroll"><div className="container empty-state">
@@ -56,12 +59,26 @@ export default function UniversityDetail() {
                 <div className="detail-section-title">Campus Life</div>
                 <div className="detail-text-card">{u.campus}</div>
 
+                {/* Save / Unsave Button */}
+                <button
+                    className="detail-cta"
+                    style={{
+                        background: saved ? 'var(--surface2)' : u.accentColor,
+                        color: saved ? 'var(--text-primary)' : 'white',
+                        border: saved ? '1.5px solid var(--border)' : 'none',
+                        marginTop: 16,
+                    }}
+                    onClick={() => toggleSavedUniversity(id)}
+                >
+                    {saved ? '✓ Saved' : '🔖 Save University'}
+                </button>
+
                 <a
                     href={u.website}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="detail-cta"
-                    style={{ background: u.accentColor }}
+                    style={{ background: u.accentColor, marginTop: 12 }}
                 >
                     🌐 Visit Official Website
                 </a>
