@@ -66,6 +66,19 @@ export default function HomeView() {
                     </div>
                 </div>
 
+                {/* My Progress Banner */}
+                <div className="progress-banner" onClick={() => navigate('/analytics')}>
+                    <div className="pb-left">
+                        <div className="pb-title">📊 My Progress</div>
+                        <div className="pb-sub">
+                            {Object.keys(userData.skillProgress || {}).length > 0
+                                ? `${Object.keys(userData.skillProgress).length} skills tracked · ${userData.currentStreak || 0} day streak 🔥`
+                                : 'Track your skills & see analytics'}
+                        </div>
+                    </div>
+                    <span className="pb-arrow">›</span>
+                </div>
+
                 {/* Recommended Programs */}
                 <div className="section-title">
                     Recommended Programs
