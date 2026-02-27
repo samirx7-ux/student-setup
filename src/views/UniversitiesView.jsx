@@ -23,23 +23,29 @@ export default function UniversitiesView() {
 
                 <div className="search-bar">
                     <span>🔍</span>
-                    <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search by name or location…" />
+                    <input
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                        placeholder="Search by name or location…"
+                    />
                 </div>
 
-                <div className="filter-row" style={{ overflowX: 'auto', paddingBottom: 4 }}>
-                    {TYPES.map(t => (
-                        <button
-                            key={t}
-                            className={`filter-btn ${type === t ? 'active' : ''}`}
-                            onClick={() => setType(t)}
-                            style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
-                        >
-                            {t}
-                        </button>
-                    ))}
+                {/* Scrollable filter row — no overflow on mobile */}
+                <div className="filter-scroll-wrapper">
+                    <div className="filter-row">
+                        {TYPES.map(t => (
+                            <button
+                                key={t}
+                                className={`filter-btn ${type === t ? 'active' : ''}`}
+                                onClick={() => setType(t)}
+                            >
+                                {t}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <p className="result-count">{filtered.length} Universities</p>
+                <p className="result-count">{filtered.length} Universit{filtered.length !== 1 ? 'ies' : 'y'}</p>
 
                 {filtered.map(u => (
                     <div key={u.id} className="uv-card" onClick={() => navigate(`/universities/${u.id}`)}>
