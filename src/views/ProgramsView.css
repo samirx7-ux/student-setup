@@ -1,7 +1,23 @@
+.filter-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 16px;
+    /* Negative margin trick to allow scroll edge-to-edge */
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.filter-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
 .filter-row {
     display: flex;
     gap: 8px;
-    margin-bottom: 16px;
+    width: max-content; /* Let chips be their natural width */
 }
 
 .filter-btn {
@@ -14,6 +30,9 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.18s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: inherit;
 }
 
 .filter-btn.active {
@@ -51,6 +70,7 @@
 .pc-body {
     padding: 14px 16px;
     flex: 1;
+    min-width: 0;
 }
 
 .pc-header {
