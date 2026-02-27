@@ -20,7 +20,7 @@ export default function HomeView() {
     const handleSearch = (e) => {
         e.preventDefault();
         if (query.trim()) {
-            navigate(`/programs?q=${encodeURIComponent(query.trim())}`);
+            navigate(`/search?q=${encodeURIComponent(query.trim())}`);
         }
     };
 
