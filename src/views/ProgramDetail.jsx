@@ -1,10 +1,13 @@
 import { useParams } from 'react-router-dom';
 import { programs } from '../data/data';
+import { useUser } from '../context/UserContext';
 import './DetailView.css';
 
 export default function ProgramDetail() {
     const { id } = useParams();
+    const { toggleSavedProgram, isSavedProgram } = useUser();
     const p = programs.find(p => p.id === id);
+    const saved = isSavedProgram(id);
 
     if (!p) return (
         <div className="view-scroll"><div className="container empty-state">
@@ -51,6 +54,20 @@ export default function ProgramDetail() {
                         </div>
                     ))}
                 </div>
+
+                {/* Save / Unsave Button */}
+                <button
+                    className="detail-cta"
+                    style={{
+                        background: saved ? 'var(--surface2)' : p.color,
+                        color: saved ? 'var(--text-primary)' : 'white',
+                        border: saved ? '1.5px solid var(--border)' : 'none',
+                        marginTop: 24,
+                    }}
+                    onClick={() => toggleSavedProgram(id)}
+                >
+                    {saved ? '✓ Saved' : '🔖 Save Program'}
+                </button>
 
             </div>
         </div>
