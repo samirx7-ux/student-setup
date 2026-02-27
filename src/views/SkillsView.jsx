@@ -22,18 +22,27 @@ export default function SkillsView() {
 
                 <div className="search-bar">
                     <span>🔍</span>
-                    <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search skills…" />
+                    <input
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                        placeholder="Search skills…"
+                    />
                 </div>
 
-                <div className="filter-row">
-                    {CATEGORIES.map(c => (
-                        <button
-                            key={c}
-                            className={`filter-btn ${cat === c ? 'active' : ''}`}
-                            onClick={() => setCat(c)}
-                        >{c}</button>
-                    ))}
+                {/* Scrollable filter row — no overflow on mobile */}
+                <div className="filter-scroll-wrapper">
+                    <div className="filter-row">
+                        {CATEGORIES.map(c => (
+                            <button
+                                key={c}
+                                className={`filter-btn ${cat === c ? 'active' : ''}`}
+                                onClick={() => setCat(c)}
+                            >{c}</button>
+                        ))}
+                    </div>
                 </div>
+
+                <p className="result-count">{filtered.length} Skill{filtered.length !== 1 ? 's' : ''}</p>
 
                 {filtered.map(s => (
                     <div key={s.id} className="skill-card" onClick={() => navigate(`/skills/${s.id}`)}>
