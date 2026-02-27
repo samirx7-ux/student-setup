@@ -117,6 +117,16 @@ export default function ProfileView() {
                 {/* Saved */}
                 <div className="section-title">Saved</div>
                 <div className="list-group">
+                    <div className="list-row" onClick={() => navigate('/analytics')}>
+                        <div className="list-row-left">
+                            <div className="list-row-icon" style={{ background: 'linear-gradient(135deg, var(--blue), var(--purple))' }}>📊</div>
+                            <div>
+                                <div style={{ fontWeight: 600 }}>My Progress</div>
+                                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Analytics dashboard</div>
+                            </div>
+                        </div>
+                        <span style={{ color: 'var(--text-tertiary)', fontSize: 22 }}>›</span>
+                    </div>
                     <div className="list-row" onClick={() => navigate('/universities')}>
                         <div className="list-row-left">
                             <div className="list-row-icon" style={{ background: 'var(--blue)' }}>🏛️</div>
