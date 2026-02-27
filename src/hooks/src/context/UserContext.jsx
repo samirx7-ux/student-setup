@@ -11,6 +11,9 @@ const DEFAULT_USER = {
     savedUniversities: ["iitb", "bits"],
     savedPrograms: ["btech-cs", "mba"],
     examAlerts: true,
+    currentStreak: 0,
+    longestStreak: 0,
+    lastActiveDate: null,
     skillProgress: {
         "python": 45,
         "english": 30,
@@ -78,6 +81,27 @@ export function UserProvider({ children }) {
         setUserData(prev => ({ ...prev, examAlerts: !prev.examAlerts }));
     };
 
+    // ── Streak Tracking ─────────────────────────────────────────
+    // Call this whenever the user does something meaningful (open app, update skill, etc.)
+    const updateStreak = () => {
+        const today = new Date().toDateString();
+        setUserData(prev => {
+            if (prev.lastActiveDate === today) return prev; // already counted today
+
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            const isConsecutive = prev.lastActiveDate === yesterday;
+            const newStreak = isConsecutive ? (prev.currentStreak || 0) + 1 : 1;
+            const newLongest = Math.max(newStreak, prev.longestStreak || 0);
+
+            return {
+                ...prev,
+                lastActiveDate: today,
+                currentStreak: newStreak,
+                longestStreak: newLongest,
+            };
+        });
+    };
+
     return (
         <UserContext.Provider value={{
             userData,
@@ -89,6 +113,7 @@ export function UserProvider({ children }) {
             updateProfile,
             resetUserData,
             toggleExamAlerts,
+            updateStreak,
         }}>
             {children}
         </UserContext.Provider>
