@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom';
 import { skills } from '../data/data';
 import { useUser } from '../context/UserContext';
 import './DetailView.css';
-import './SkillDetail.css';
 
 export default function SkillDetail() {
     const { id } = useParams();
