@@ -1,3 +1,51 @@
+.filter-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 16px;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.filter-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-row {
+    display: flex;
+    gap: 8px;
+    width: max-content;
+}
+
+.filter-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: inherit;
+}
+
+.filter-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.result-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
 .uv-card {
     background: var(--surface);
     border-radius: var(--radius-md);
@@ -27,6 +75,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 6px;
+    gap: 8px;
 }
 
 .uv-type {
@@ -36,11 +85,15 @@
     border-radius: 12px;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    white-space: nowrap;
 }
 
 .uv-rank {
     font-size: 12px;
     color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .uv-name {
@@ -59,36 +112,6 @@
     font-size: 13px;
     color: var(--text-secondary);
     line-height: 1.45;
-}
-
-.filter-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.filter-btn {
-    padding: 7px 18px;
-    border-radius: 20px;
-    border: 1.5px solid var(--border);
-    background: var(--surface);
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.18s;
-}
-
-.filter-btn.active {
-    background: var(--blue);
-    border-color: var(--blue);
-    color: white;
-}
-
-.result-count {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 12px;
 }
 
 .empty-state {
