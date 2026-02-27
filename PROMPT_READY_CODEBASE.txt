@@ -1,0 +1,3693 @@
+=== SYSTEM INSTRUCTION: This is the full codebase for the Student Setup (Campus Terminal) project. ===
+
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\App.jsx ---
+import './styles/global.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import AppShell from './components/AppShell';
+import HomeView from './views/HomeView';
+import ProgramsView from './views/ProgramsView';
+import UniversitiesView from './views/UniversitiesView';
+import SkillsView from './views/SkillsView';
+import ProfileView from './views/ProfileView';
+import UniversityDetail from './views/UniversityDetail';
+import ProgramDetail from './views/ProgramDetail';
+import SkillDetail from './views/SkillDetail';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route index element={<Navigate to="/home" replace />} />
+          <Route path="/home" element={<HomeView />} />
+          <Route path="/programs" element={<ProgramsView />} />
+          <Route path="/programs/:id" element={<ProgramDetail />} />
+          <Route path="/universities" element={<UniversitiesView />} />
+          <Route path="/universities/:id" element={<UniversityDetail />} />
+          <Route path="/skills" element={<SkillsView />} />
+          <Route path="/skills/:id" element={<SkillDetail />} />
+          <Route path="/profile" element={<ProfileView />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\components\AppShell.css ---
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-body {
+    flex: 1;
+    overflow: hidden;
+    padding-top: calc(var(--header-h) + var(--sat));
+    padding-bottom: calc(var(--tab-h) + var(--sab));
+}
+
+/* Chatbot FAB */
+.chatbot-fab {
+    position: fixed;
+    bottom: calc(var(--tab-h) + var(--sab) + 16px);
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 26px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white;
+    font-size: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+    z-index: 150;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.chatbot-fab:active {
+    transform: scale(0.91);
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\components\AppShell.jsx ---
+import { Outlet, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import TabBar from './TabBar';
+import Header from './Header';
+import Chatbot from './Chatbot';
+import './AppShell.css';
+
+const titleMap = {
+    '/home': 'Home',
+    '/programs': 'Programs',
+    '/universities': 'Universities',
+    '/skills': 'Skills',
+    '/profile': 'Profile',
+};
+
+export default function AppShell() {
+    const location = useLocation();
+    const [chatOpen, setChatOpen] = useState(false);
+
+    // Check if we're on a detail page
+    const segments = location.pathname.split('/');
+    const isDetail = segments.length > 2 && segments[2];
+    const rootPath = '/' + segments[1];
+    const title = titleMap[location.pathname] || titleMap[rootPath] || 'SP';
+
+    return (
+        <div className="app-shell">
+            <Header title={title} isDetail={isDetail} />
+
+            <main className="app-body">
+                <Outlet />
+            </main>
+
+            <TabBar />
+
+            {/* Chatbot FAB */}
+            <button
+                className="chatbot-fab"
+                onClick={() => setChatOpen(true)}
+                aria-label="Open AI Guide"
+            >
+                💬
+            </button>
+
+            <Chatbot isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\components\Chatbot.css ---
+.chatbot-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chatbot-overlay.open {
+    transform: translateY(0);
+}
+
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: calc(16px + var(--sat)) 16px 16px;
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+}
+
+.chatbot-header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chatbot-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.chatbot-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.chatbot-status {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+}
+
+.chatbot-close {
+    background: var(--surface2);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bubble {
+    max-width: 78%;
+    padding: 11px 15px;
+    border-radius: 20px;
+    font-size: 15px;
+    line-height: 1.45;
+    animation: fadeUp 0.25s ease;
+}
+
+.bubble.bot {
+    align-self: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+}
+
+.bubble.user {
+    align-self: flex-end;
+    background: var(--blue);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chatbot-input-row {
+    display: flex;
+    padding: 12px 16px calc(12px + var(--sab)) 16px;
+    background: var(--surface);
+    border-top: 0.5px solid var(--border);
+    gap: 10px;
+}
+
+.chatbot-input-row input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 10px 16px;
+    font-size: 15px;
+    outline: none;
+    color: var(--text-primary);
+}
+
+.chatbot-input-row input::placeholder {
+    color: var(--text-secondary);
+}
+
+.chatbot-input-row button {
+    background: var(--blue);
+    border: none;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.chatbot-input-row button:disabled {
+    opacity: 0.4;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\components\Chatbot.jsx ---
+import { useState, useRef, useEffect } from 'react';
+import './Chatbot.css';
+
+const BOT_NAME = 'SP Guide';
+
+const getResponse = (text) => {
+    const t = text.toLowerCase();
+    if (t.includes('course') || t.includes('program') || t.includes('degree'))
+        return "Based on your profile, I'd suggest B.Tech CS or MBA. Check the Programs tab for full eligibility, exams, and career paths! 🎓";
+    if (t.includes('university') || t.includes('college') || t.includes('iit') || t.includes('bits'))
+        return "IIT Bombay and BITS Pilani are top picks for engineering. For commerce, DU's SRCC is unbeatable. Go to Universities tab to compare them! 🏛️";
+    if (t.includes('exam') || t.includes('jee') || t.includes('cat') || t.includes('gate') || t.includes('neet'))
+        return "JEE Main/Advanced for IITs & NITs. CAT for MBA (IIMs). GATE for M.Tech. NEET for MBBS. CUET for most central universities. Which one can I help with? 📝";
+    if (t.includes('skill') || t.includes('python') || t.includes('coding') || t.includes('communication'))
+        return "I recommend starting with Python Programming and English Fluency — they're the highest-demand skills for Indian students! Check the Skills tab. ⚡";
+    if (t.includes('placement') || t.includes('salary') || t.includes('job') || t.includes('ctc'))
+        return "IIT Bombay avg CTC is ₹21.8 LPA. BITS Pilani sees ₹30 LPA. For MBA, IIM grads average ₹30–50 LPA. Which stream interests you more?";
+    if (t.includes('fee') || t.includes('cost') || t.includes('money') || t.includes('scholarship'))
+        return "Govt colleges (IITs/NITs) are ₹1–2L/yr. Top private: ₹3–6L/yr. Scholarships like PM Vidyalakshmi and NSP are available for eligible students! 💰";
+    if (t.includes('hello') || t.includes('hi') || t.includes('hey'))
+        return "Hey there! 👋 I'm your AI education guide. Ask me about universities, programs, exams, salary, or skills — I've got you covered!";
+    if (t.includes('thank'))
+        return "You're welcome! Best of luck with your education journey. Feel free to ask me anything anytime! 🌟";
+    return "Great question! I'm still learning more about that. Meanwhile, explore the tabs above — Programs, Universities, and Skills have a lot of detailed info. Is there something specific I can help you with? 🤔";
+};
+
+export default function Chatbot({ isOpen, onClose }) {
+    const [messages, setMessages] = useState([
+        { sender: 'bot', text: "Hello! I'm your AI education guide. Ask me about programs, universities, exams, or skills! 🎓" }
+    ]);
+    const [input, setInput] = useState('');
+    const bottomRef = useRef(null);
+
+    useEffect(() => {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
+
+    const handleSend = () => {
+        const trimmed = input.trim();
+        if (!trimmed) return;
+        const userMsg = { sender: 'user', text: trimmed };
+        setMessages(prev => [...prev, userMsg]);
+        setInput('');
+        setTimeout(() => {
+            setMessages(prev => [...prev, { sender: 'bot', text: getResponse(trimmed) }]);
+        }, 600);
+    };
+
+    return (
+        <div className={`chatbot-overlay ${isOpen ? 'open' : ''}`}>
+            <div className="chatbot-header">
+                <div className="chatbot-header-info">
+                    <div className="chatbot-avatar">🤖</div>
+                    <div>
+                        <div className="chatbot-name">{BOT_NAME}</div>
+                        <div className="chatbot-status"><span className="status-dot" />Online</div>
+                    </div>
+                </div>
+                <button className="chatbot-close" onClick={onClose} aria-label="Close">✕</button>
+            </div>
+
+            <div className="chatbot-messages">
+                {messages.map((msg, i) => (
+                    <div key={i} className={`bubble ${msg.sender}`}>
+                        {msg.text}
+                    </div>
+                ))}
+                <div ref={bottomRef} />
+            </div>
+
+            <div className="chatbot-input-row">
+                <input
+                    type="text"
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSend()}
+                    placeholder="Ask anything…"
+                />
+                <button onClick={handleSend} disabled={!input.trim()} aria-label="Send">➤</button>
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\components\Header.css ---
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--header-h) + var(--sat));
+    padding-top: var(--sat);
+    padding-left: 16px;
+    padding-right: 16px;
+    background: var(--header-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    z-index: 100;
+}
+
+.header-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.back-btn {
+    background: transparent;
+    border: none;
+    font-size: 32px;
+    color: var(--blue);
+    cursor: pointer;
+    padding: 0 12px 0 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\components\Header.jsx ---
+import { useNavigate } from 'react-router-dom';
+import './Header.css';
+
+export default function Header({ title, isDetail }) {
+    const navigate = useNavigate();
+    return (
+        <header className="app-header">
+            {isDetail && (
+                <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+                    ‹
+                </button>
+            )}
+            <h1 className="header-title">{title}</h1>
+        </header>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\components\TabBar.css ---
+.tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--tab-h) + var(--sab));
+    padding-bottom: var(--sab);
+    background: var(--tab-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding-top: 10px;
+    z-index: 100;
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    min-width: 56px;
+    text-decoration: none;
+    color: var(--text-tertiary);
+    transition: color 0.2s;
+    cursor: pointer;
+    padding: 2px 8px;
+}
+
+.tab-item.active {
+    color: var(--blue);
+}
+
+.tab-icon {
+    font-size: 23px;
+    line-height: 1;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tab-item.active .tab-icon {
+    transform: scale(1.12);
+}
+
+.tab-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\components\TabBar.jsx ---
+import { NavLink } from 'react-router-dom';
+import './TabBar.css';
+
+const tabs = [
+    { to: '/home', icon: '🏠', label: 'Home' },
+    { to: '/programs', icon: '📚', label: 'Programs' },
+    { to: '/universities', icon: '🏛️', label: 'Universities' },
+    { to: '/skills', icon: '⚡', label: 'Skills' },
+    { to: '/profile', icon: '👤', label: 'Profile' },
+];
+
+export default function TabBar() {
+    return (
+        <nav className="tab-bar" role="tablist">
+            {tabs.map(tab => (
+                <NavLink
+                    key={tab.to}
+                    to={tab.to}
+                    className={({ isActive }) => `tab-item ${isActive ? 'active' : ''}`}
+                    role="tab"
+                >
+                    <span className="tab-icon">{tab.icon}</span>
+                    <span className="tab-label">{tab.label}</span>
+                </NavLink>
+            ))}
+        </nav>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\data\data.js ---
+export const universities = [
+    {
+        id: "iitb",
+        name: "Indian Institute of Technology Bombay",
+        shortName: "IIT Bombay",
+        type: "Government",
+        location: "Mumbai, Maharashtra",
+        ranking: "#1 Engineering (NIRF 2024)",
+        overview: "IIT Bombay is one of India's premier engineering institutions, renowned globally for research excellence, innovation, and outstanding alumni. Established in 1958, it offers programs across engineering, science, design, and management.",
+        courses: ["B.Tech", "M.Tech", "M.Sc", "MBA", "PhD"],
+        admission: "JEE Advanced for B.Tech. GATE for M.Tech/Ph.D. CEED for M.Des.",
+        placements: "Average CTC ₹21.8 LPA | Highest ₹3.67 CPA (International)",
+        campus: "Spread over 550 acres in the heart of Mumbai with world-class labs, hostels, and sports facilities.",
+        website: "https://www.iitb.ac.in",
+        image: "https://images.unsplash.com/photo-1562774053-701939374585?w=800&q=80",
+        accentColor: "#007AFF"
+    },
+    {
+        id: "du",
+        name: "University of Delhi",
+        shortName: "University of Delhi",
+        type: "Government",
+        location: "New Delhi",
+        ranking: "#11 University (NIRF 2024)",
+        overview: "DU is a collegiate central university with over 90 colleges and 300,000+ students. Known for humanities, commerce, and science programs.",
+        courses: ["B.A.", "B.Sc", "B.Com", "LL.B", "M.A.", "MBA"],
+        admission: "CUET (UG & PG) for all undergraduate and postgraduate programs.",
+        placements: "Average CTC ₹6-8 LPA (varies by college and stream)",
+        campus: "Two campuses — North and South — spread across Delhi with iconic heritage buildings.",
+        website: "https://www.du.ac.in",
+        image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80",
+        accentColor: "#FF9500"
+    },
+    {
+        id: "jnu",
+        name: "Jawaharlal Nehru University",
+        shortName: "JNU",
+        type: "Government",
+        location: "New Delhi",
+        ranking: "#2 University (NIRF 2024)",
+        overview: "JNU is a central university known for its social science, humanities, and international relations programs. It has a vibrant intellectual culture and research environment.",
+        courses: ["B.A.", "M.A.", "M.Sc", "MCA", "PhD"],
+        admission: "CUET PG for postgraduate. JNUEE for specific programs.",
+        placements: "Primarily research-oriented; strong placement in civil services & academia.",
+        campus: "Lush green 1000-acre campus with a strong tradition of student engagement.",
+        website: "https://www.jnu.ac.in",
+        image: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=800&q=80",
+        accentColor: "#34C759"
+    },
+    {
+        id: "bhu",
+        name: "Banaras Hindu University",
+        shortName: "BHU",
+        type: "Government",
+        location: "Varanasi, Uttar Pradesh",
+        ranking: "#5 University (NIRF 2024)",
+        overview: "One of the largest residential universities in Asia, BHU offers a wide range of humanities, science, engineering, and medical programs.",
+        courses: ["B.A.", "B.Sc", "B.Tech", "MBBS", "M.A.", "M.Tech", "PhD"],
+        admission: "CUET for most UG programs. JEE Main for B.Tech. NEET for MBBS.",
+        placements: "Average CTC ₹7-10 LPA for engineering; strong in medical and research.",
+        campus: "1300-acre campus — one of the largest in the world — with temples, hospitals, and research centers.",
+        website: "https://www.bhu.ac.in",
+        image: "https://images.unsplash.com/photo-1590593162201-f67611a18b87?w=800&q=80",
+        accentColor: "#AF52DE"
+    },
+    {
+        id: "bits",
+        name: "BITS Pilani",
+        shortName: "BITS Pilani",
+        type: "Private (Deemed)",
+        location: "Pilani, Rajasthan",
+        ranking: "#25 Engineering (NIRF 2024)",
+        overview: "BITS Pilani is a top-ranked private institute known for its rigorous engineering and science curriculum, dual-degree flexibility, and exceptional industry practice program (WILP).",
+        courses: ["B.E.", "B.Pharm", "M.Sc (Hons.)", "M.E.", "MBA", "PhD"],
+        admission: "BITSAT for all undergraduate programs. No JEE required.",
+        placements: "Average CTC ₹30 LPA | Highest ₹2.05 CPA (International)",
+        campus: "4 campuses: Pilani, Goa, Hyderabad, Dubai. Modern facilities with zero mandatory attendance.",
+        website: "https://www.bits-pilani.ac.in",
+        image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80",
+        accentColor: "#FF3B30"
+    },
+    {
+        id: "vit",
+        name: "VIT Vellore",
+        shortName: "VIT Vellore",
+        type: "Private (Deemed)",
+        location: "Vellore, Tamil Nadu",
+        ranking: "#11 Engineering (NIRF 2024)",
+        overview: "VIT is India's most internationally connected private university with 60+ MoUs globally. Known for tech-forward curriculum and excellent campus placement.",
+        courses: ["B.Tech", "M.Tech", "MBA", "MCA", "PhD"],
+        admission: "VITEEE exam (online). No JEE Main required.",
+        placements: "Average CTC ₹9.2 LPA | Over 200+ companies recruit on campus.",
+        campus: "600-acre hi-tech campus with over 35,000 students and world-class labs.",
+        website: "https://vit.ac.in",
+        image: "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?w=800&q=80",
+        accentColor: "#32ADE6"
+    },
+    {
+        id: "manipal",
+        name: "Manipal Academy of Higher Education",
+        shortName: "Manipal",
+        type: "Private (Deemed)",
+        location: "Manipal, Karnataka",
+        ranking: "#6 University (NIRF 2024)",
+        overview: "Manipal is a world-class private university with 28,000+ students from 57 countries, known for medical, engineering, and media programs.",
+        courses: ["MBBS", "B.Tech", "B.Sc Nursing", "MBA", "B.A.", "M.Tech"],
+        admission: "MET for B.Tech. MU OET online test. NEET for Medical.",
+        placements: "Average CTC ₹12-15 LPA for engineering; top recruiter for medical graduates.",
+        campus: "14 institutes on one campus with 600+ acres of facilities including a teaching hospital.",
+        website: "https://manipal.edu",
+        image: "https://images.unsplash.com/photo-1616400619175-5beda3a17896?w=800&q=80",
+        accentColor: "#5856D6"
+    },
+    {
+        id: "amity",
+        name: "Amity University",
+        shortName: "Amity",
+        type: "Private",
+        location: "Noida, Uttar Pradesh (+ 14 campuses)",
+        ranking: "Rated A+ by NAAC",
+        overview: "Amity is one of India's largest private universities with 14 campuses. Strong focus on management, law, journalism, and engineering.",
+        courses: ["B.Tech", "MBA", "LL.B", "B.Sc", "B.A."],
+        admission: "Amity JEE for engineering. Direct admission based on board marks for others.",
+        placements: "Average CTC ₹5-8 LPA. Strong industry connect across media & management.",
+        campus: "Multiple campuses across India and internationally in London, Dubai, and New York.",
+        website: "https://www.amity.edu",
+        image: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80",
+        accentColor: "#FF9500"
+    }
+];
+
+export const programs = [
+    {
+        id: "btech-cs",
+        title: "B.Tech – Computer Science",
+        level: "Bachelor",
+        duration: "4 Years",
+        eligibility: "10+2 with PCM (min 60%)",
+        exams: ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE", "MET"],
+        fees: "Govt: ₹1–2L/yr | Private: ₹3–6L/yr",
+        careers: ["Software Engineer", "Data Scientist", "AI/ML Developer", "Product Manager", "DevOps Engineer"],
+        topUnis: ["IIT Bombay", "BITS Pilani", "VIT Vellore", "NIT Trichy", "IIIT Hyderabad"],
+        color: "#007AFF"
+    },
+    {
+        id: "btech-mech",
+        title: "B.Tech – Mechanical Engineering",
+        level: "Bachelor",
+        duration: "4 Years",
+        eligibility: "10+2 with PCM (min 55%)",
+        exams: ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE"],
+        fees: "Govt: ₹1–2L/yr | Private: ₹2–5L/yr",
+        careers: ["Mechanical Engineer", "Design Engineer", "CAD Analyst", "Automotive Engineer"],
+        topUnis: ["IIT Bombay", "IIT Delhi", "NIT Surathkal", "BHU"],
+        color: "#FF9500"
+    },
+    {
+        id: "bcom",
+        title: "B.Com (Hons.)",
+        level: "Bachelor",
+        duration: "3 Years",
+        eligibility: "10+2 in any stream (Commerce preferred, min 50%)",
+        exams: ["CUET", "DU JAT", "Christ University Entrance"],
+        fees: "Govt: ₹10k–30k/yr | Private: ₹1–3L/yr",
+        careers: ["Chartered Accountant", "Financial Analyst", "Tax Consultant", "Investment Banker"],
+        topUnis: ["SRCC Delhi", "Christ University", "Narsee Monjee", "Loyola Chennai"],
+        color: "#34C759"
+    },
+    {
+        id: "ba",
+        title: "B.A. in Economics / Political Science",
+        level: "Bachelor",
+        duration: "3 Years",
+        eligibility: "10+2 in any stream (min 45–60%)",
+        exams: ["CUET", "JNU Entrance", "University-specific tests"],
+        fees: "Govt: ₹5k–25k/yr | Private: ₹50k–2L/yr",
+        careers: ["Civil Servant (IAS/IPS)", "Economist", "Journalist", "Policy Analyst", "Lawyer"],
+        topUnis: ["JNU Delhi", "DU (Hindu College, LSR)", "Jadavpur University"],
+        color: "#AF52DE"
+    },
+    {
+        id: "mbbs",
+        title: "MBBS",
+        level: "Bachelor",
+        duration: "5.5 Years",
+        eligibility: "10+2 with PCB (min 50%) + NEET",
+        exams: ["NEET UG"],
+        fees: "Govt: ₹10k–1L/yr | Private: ₹10–25L/yr",
+        careers: ["Doctor (General/Specialist)", "Surgeon", "Medical Researcher", "Public Health"],
+        topUnis: ["AIIMS Delhi", "BHU Medical", "Manipal MBBS", "CMC Vellore"],
+        color: "#FF3B30"
+    },
+    {
+        id: "mba",
+        title: "MBA",
+        level: "Master",
+        duration: "2 Years",
+        eligibility: "Bachelor's degree in any discipline (min 50%) + Work experience preferred",
+        exams: ["CAT", "XAT", "GMAT", "MAT", "SNAP"],
+        fees: "IIMs: ₹20–30L total | Private: ₹10–25L total",
+        careers: ["Management Consultant", "Marketing Manager", "Investment Banker", "CEO/Founder"],
+        topUnis: ["IIM Ahmedabad", "IIM Bangalore", "ISB Hyderabad", "FMS Delhi", "XLRI Jamshedpur"],
+        color: "#5856D6"
+    },
+    {
+        id: "mtech",
+        title: "M.Tech / M.E.",
+        level: "Master",
+        duration: "2 Years",
+        eligibility: "B.Tech/B.E. in relevant discipline + GATE score",
+        exams: ["GATE"],
+        fees: "Govt: ₹50k–1L/yr (+stipend) | Private: ₹1–3L/yr",
+        careers: ["Research Scientist", "Senior Engineer", "University Faculty", "R&D Lead"],
+        topUnis: ["IIT Bombay", "IIT Delhi", "IISc Bangalore", "NIT Calicut"],
+        color: "#32ADE6"
+    },
+    {
+        id: "msc-ds",
+        title: "M.Sc in Data Science / AI",
+        level: "Master",
+        duration: "2 Years",
+        eligibility: "B.Sc/B.Tech with Statistics or Maths or CS (min 55%)",
+        exams: ["CUET PG", "University Entrance Test", "IIT JAM"],
+        fees: "Govt: ₹30k–1L/yr | Private: ₹1.5–4L/yr",
+        careers: ["Data Scientist", "ML Engineer", "AI Researcher", "Business Analyst"],
+        topUnis: ["IIT Bombay", "IIIT Hyderabad", "VIT Vellore", "Manipal"],
+        color: "#FF9F0A"
+    }
+];
+
+export const skills = [
+    {
+        id: "python",
+        category: "Coding",
+        name: "Python Programming",
+        description: "From variables to data science and machine learning basics.",
+        levels: ["Beginner", "Intermediate", "Advanced"],
+        color: "#007AFF",
+        icon: "💻",
+        topics: ["Syntax & Variables", "Functions & OOP", "File I/O", "Pandas & NumPy", "APIs", "ML with scikit-learn"]
+    },
+    {
+        id: "webdev",
+        category: "Coding",
+        name: "Web Development",
+        description: "Build real websites and apps with HTML, CSS, JS, and React.",
+        levels: ["Beginner", "Intermediate", "Advanced"],
+        color: "#AF52DE",
+        icon: "🌐",
+        topics: ["HTML5 Fundamentals", "CSS & Flexbox", "JavaScript ES6+", "React Basics", "Backend (Node.js)", "Deployment"]
+    },
+    {
+        id: "java",
+        category: "Coding",
+        name: "Java Programming",
+        description: "Core Java concepts and data structures for placements.",
+        levels: ["Beginner", "Intermediate"],
+        color: "#FF9500",
+        icon: "☕",
+        topics: ["OOP in Java", "Collections", "Data Structures", "Algorithms", "JDBC", "Spring Intro"]
+    },
+    {
+        id: "dsa",
+        category: "Coding",
+        name: "Data Structures & Algorithms",
+        description: "Essential DSA for cracking big-tech placement interviews.",
+        levels: ["Intermediate", "Advanced"],
+        color: "#FF3B30",
+        icon: "🧮",
+        topics: ["Arrays & Strings", "Linked Lists", "Trees & Graphs", "Dynamic Programming", "Greedy", "Sorting & Searching"]
+    },
+    {
+        id: "public-speaking",
+        category: "Communication",
+        name: "Public Speaking",
+        description: "Build confidence and present ideas powerfully.",
+        levels: ["Beginner", "Intermediate"],
+        color: "#FF9500",
+        icon: "🎙️",
+        topics: ["Overcoming Nervousness", "Structuring a Talk", "Voice Modulation", "Body Language", "GD Practice"]
+    },
+    {
+        id: "english",
+        category: "Communication",
+        name: "English Fluency",
+        description: "Improve spoken and written English for academics & jobs.",
+        levels: ["Beginner", "Intermediate", "Advanced"],
+        color: "#32ADE6",
+        icon: "🗣️",
+        topics: ["Grammar Essentials", "Vocabulary Building", "Email Writing", "Presentation Skills", "Interview English"]
+    },
+    {
+        id: "interview-prep",
+        category: "Communication",
+        name: "Interview Preparation",
+        description: "Master HR and technical interviews step by step.",
+        levels: ["Beginner", "Intermediate"],
+        color: "#34C759",
+        icon: "🤝",
+        topics: ["Tell Me About Yourself", "Situational Questions", "Technical Rounds", "Mock Interviews", "Salary Negotiation"]
+    },
+    {
+        id: "resume",
+        category: "Career",
+        name: "Resume Building",
+        description: "Create an ATS-friendly resume that stands out.",
+        levels: ["Beginner"],
+        color: "#34C759",
+        icon: "📄",
+        topics: ["Resume Structure", "Action Verbs", "Quantifying Impact", "ATS Optimization", "Fresher vs Experienced"]
+    },
+    {
+        id: "linkedin",
+        category: "Career",
+        name: "LinkedIn Optimization",
+        description: "Turn your profile into a recruiter magnet.",
+        levels: ["Beginner", "Intermediate"],
+        color: "#0077B5",
+        icon: "💼",
+        topics: ["Profile Photo & Headline", "About Section", "Experience & Skills", "Content Strategy", "Networking Tips"]
+    },
+    {
+        id: "leadership",
+        category: "Career",
+        name: "Leadership Skills",
+        description: "Develop the mindset and skills of a future leader.",
+        levels: ["Beginner", "Intermediate"],
+        color: "#5856D6",
+        icon: "🏆",
+        topics: ["Self-Awareness", "Decision Making", "Team Motivation", "Conflict Resolution", "Strategic Thinking"]
+    }
+];
+
+export const userData = {
+    name: "Student",
+    level: "12th Grade",
+    targetDegree: "Bachelor",
+    interests: ["Technology", "Business"],
+    savedUniversities: ["iitb", "bits"],
+    savedPrograms: ["btech-cs", "mba"],
+    skillProgress: {
+        "python": 45,
+        "english": 30,
+        "resume": 70,
+        "public-speaking": 20
+    }
+};
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\main.jsx ---
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\styles\global.css ---
+@import './variables.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    font-family: inherit;
+}
+
+img {
+    display: block;
+}
+
+/* Scrollable View Area */
+.view-scroll {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px;
+    animation: viewIn 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding-bottom: 24px;
+}
+
+@keyframes viewIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Typography helpers */
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 24px 0 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: -0.3px;
+}
+
+.section-title .see-all {
+    font-size: 14px;
+    color: var(--blue);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Search Bar */
+.search-bar {
+    background: var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.search-bar svg {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 16px;
+    width: 100%;
+}
+
+.search-bar input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Tags / Chips */
+.tag {
+    background: var(--surface2);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.tag.blue {
+    background: rgba(0, 122, 255, 0.12);
+    color: var(--blue);
+}
+
+.tag.purple {
+    background: rgba(175, 82, 222, 0.12);
+    color: var(--purple);
+}
+
+.tag.orange {
+    background: rgba(255, 149, 0, 0.12);
+    color: var(--orange);
+}
+
+.tag.green {
+    background: rgba(52, 199, 89, 0.12);
+    color: var(--green);
+}
+
+/* Horizontal Scroll */
+.h-scroll {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.h-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Badge */
+.badge {
+    background: var(--red);
+    color: white;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+}
+
+/* Progress Bar */
+.progress-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--blue);
+    transition: width 0.6s ease;
+}
+
+/* List Row (Settings/Profile) */
+.list-group {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--divider);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.list-row:last-child {
+    border-bottom: none;
+}
+
+.list-row:active {
+    background: var(--surface2);
+}
+
+.list-row-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.list-row-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\styles\variables.css ---
+/* ============================================
+   iOS Design System Variables
+   ============================================ */
+:root {
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sat: env(safe-area-inset-top, 0px);
+
+    /* Light Mode */
+    --bg: #F2F2F7;
+    --surface: #FFFFFF;
+    --surface2: #EFEFF4;
+    --text-primary: #000000;
+    --text-secondary: rgba(60, 60, 67, 0.6);
+    --text-tertiary: rgba(60, 60, 67, 0.3);
+    --border: rgba(60, 60, 67, 0.18);
+    --divider: rgba(60, 60, 67, 0.29);
+    --header-bg: rgba(255, 255, 255, 0.85);
+    --tab-bg: rgba(255, 255, 255, 0.92);
+
+    /* Accent Colors */
+    --blue: #007AFF;
+    --purple: #AF52DE;
+    --orange: #FF9500;
+    --red: #FF3B30;
+    --green: #34C759;
+    --teal: #32ADE6;
+    --indigo: #5856D6;
+
+    /* Sizing */
+    --header-h: 56px;
+    --tab-h: 83px;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #000000;
+        --surface: #1C1C1E;
+        --surface2: #2C2C2E;
+        --text-primary: #FFFFFF;
+        --text-secondary: rgba(235, 235, 245, 0.6);
+        --text-tertiary: rgba(235, 235, 245, 0.3);
+        --border: rgba(84, 84, 88, 0.65);
+        --divider: rgba(84, 84, 88, 0.65);
+        --header-bg: rgba(28, 28, 30, 0.88);
+        --tab-bg: rgba(28, 28, 30, 0.92);
+
+        --blue: #0A84FF;
+        --purple: #BF5AF2;
+        --orange: #FF9F0A;
+        --red: #FF453A;
+        --green: #32D74B;
+
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.55);
+    }
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\DetailView.css ---
+/* Shared styles for all detail/full-page views */
+
+.detail-hero {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 20px;
+    height: 200px;
+}
+
+.detail-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.detail-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.65) 50%, transparent);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+}
+
+.detail-hero-title {
+    color: white;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.detail-hero-sub {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.detail-overview {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.detail-section-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 20px 0 10px;
+    letter-spacing: -0.2px;
+}
+
+.detail-text-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 4px;
+}
+
+.tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--divider);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.info-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+}
+
+.info-value {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.detail-cta {
+    display: block;
+    width: 100%;
+    margin-top: 24px;
+    padding: 15px;
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+}
+
+.career-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.career-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Banner style for program detail */
+.detail-banner {
+    border-radius: var(--radius-md);
+    padding: 24px 20px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.detail-banner-level {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+}
+
+.detail-banner-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.detail-banner-sub {
+    font-size: 15px;
+    opacity: 0.82;
+}
+
+/* Skill Detail Hero */
+.skill-detail-hero {
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.sdh-icon {
+    font-size: 44px;
+    flex-shrink: 0;
+}
+
+.sdh-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.sdh-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.levels-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.level-chip {
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state p {
+    margin-top: 12px;
+    font-size: 15px;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\HomeView.css ---
+.home-welcome {
+    padding: 8px 0 20px;
+}
+
+.welcome-greeting {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.welcome-heading {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+    margin-bottom: 6px;
+}
+
+.welcome-heading span {
+    color: var(--blue);
+}
+
+.welcome-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+
+/* Stats Row */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.stat-num {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: -1px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* Program card (horizontal scroll) */
+.prog-card {
+    min-width: 200px;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.18s;
+    flex-shrink: 0;
+}
+
+.prog-card:active {
+    transform: scale(0.97);
+}
+
+.prog-level {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.prog-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.prog-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* University card */
+.uni-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: transform 0.18s;
+}
+
+.uni-card:active {
+    transform: scale(0.98);
+}
+
+.uni-card-img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+}
+
+.uni-card-body {
+    padding: 14px;
+}
+
+.uni-card-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.uni-card-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.uni-card-rank {
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* Skill progress card */
+.skill-progress-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.skill-progress-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.skill-progress-info {
+    flex: 1;
+}
+
+.skill-progress-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.skill-progress-cat {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.skill-pct {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\HomeView.jsx ---
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { universities, programs, skills, userData } from '../data/data';
+import './HomeView.css';
+
+export default function HomeView() {
+    const navigate = useNavigate();
+    const [query, setQuery] = useState('');
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (query.trim()) {
+            navigate(`/programs?q=${encodeURIComponent(query.trim())}`);
+        }
+    };
+
+    return (
+        <div className="view-scroll">
+            <div className="container">
+
+                {/* Welcome */}
+                <div className="home-welcome">
+                    <p className="welcome-greeting">Good morning 👋</p>
+                    <h2 className="welcome-heading">
+                        Hello, <span>{userData.name}!</span>
+                    </h2>
+                    <p className="welcome-sub">Your education journey starts here.</p>
+                </div>
+
+                {/* Quick Search */}
+                <form className="search-bar" onSubmit={handleSearch}>
+                    <span>🔍</span>
+                    <input
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                        placeholder="Search programs, universities, skills…"
+                    />
+                </form>
+
+                {/* Quick Stats */}
+                <div className="stats-row">
+                    <div className="stat-card">
+                        <div className="stat-num">8+</div>
+                        <div className="stat-label">Universities</div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-num">8+</div>
+                        <div className="stat-label">Programs</div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-num">10+</div>
+                        <div className="stat-label">Skills</div>
+                    </div>
+                </div>
+
+                {/* Recommended Programs */}
+                <div className="section-title">
+                    Recommended Programs
+                    <span className="see-all" onClick={() => navigate('/programs')}>See All</span>
+                </div>
+                <div className="h-scroll">
+                    {programs.slice(0, 5).map(p => (
+                        <div
+                            key={p.id}
+                            className="prog-card"
+                            style={{ borderTop: `4px solid ${p.color}` }}
+                            onClick={() => navigate(`/programs/${p.id}`)}
+                        >
+                            <div className="prog-level" style={{ color: p.color }}>{p.level}</div>
+                            <div className="prog-title">{p.title}</div>
+                            <div className="prog-meta">{p.duration} • {p.exams[0]}</div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Top Universities */}
+                <div className="section-title">
+                    Top Universities
+                    <span className="see-all" onClick={() => navigate('/universities')}>See All</span>
+                </div>
+                {universities.slice(0, 3).map(u => (
+                    <div key={u.id} className="uni-card" onClick={() => navigate(`/universities/${u.id}`)}>
+                        <img src={u.image} alt={u.name} className="uni-card-img" />
+                        <div className="uni-card-body">
+                            <div className="uni-card-name">{u.name}</div>
+                            <div className="uni-card-meta">{u.location}</div>
+                            <div className="uni-card-rank">{u.ranking}</div>
+                            <div className="tag" style={{ marginTop: 8, background: u.type === 'Government' ? 'rgba(52,199,89,0.12)' : 'rgba(0,122,255,0.12)', color: u.type === 'Government' ? 'var(--green)' : 'var(--blue)' }}>
+                                {u.type}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                {/* Continue Skills */}
+                <div className="section-title">
+                    Your Skills
+                    <span className="see-all" onClick={() => navigate('/skills')}>See All</span>
+                </div>
+                {Object.entries(userData.skillProgress).slice(0, 3).map(([id, pct]) => {
+                    const skill = skills.find(s => s.id === id);
+                    if (!skill) return null;
+                    return (
+                        <div key={id} className="skill-progress-card" onClick={() => navigate(`/skills/${id}`)}>
+                            <div className="skill-progress-top">
+                                <span style={{ fontSize: 22 }}>{skill.icon}</span>
+                                <div className="skill-progress-info">
+                                    <div className="skill-progress-name">{skill.name}</div>
+                                    <div className="skill-progress-cat">{skill.category}</div>
+                                </div>
+                                <div className="skill-pct" style={{ color: skill.color }}>{pct}%</div>
+                            </div>
+                            <div className="progress-track" style={{ marginTop: 8 }}>
+                                <div className="progress-fill" style={{ width: `${pct}%`, background: skill.color }} />
+                            </div>
+                        </div>
+                    );
+                })}
+
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\ProfileView.css ---
+.profile-hero {
+    text-align: center;
+    padding: 16px 0 28px;
+}
+
+.profile-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 42px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white;
+    font-size: 36px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+}
+
+.profile-name {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.profile-meta {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.profile-interests {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.skill-prog-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--divider);
+    cursor: pointer;
+}
+
+.skill-prog-row:last-child {
+    border-bottom: none;
+}
+
+.spr-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.spr-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.spr-cat {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.spr-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.spr-pct {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\ProfileView.jsx ---
+import { useNavigate } from 'react-router-dom';
+import { userData, skills } from '../data/data';
+import './ProfileView.css';
+
+export default function ProfileView() {
+    const navigate = useNavigate();
+    const initials = userData.name.charAt(0).toUpperCase();
+
+    return (
+        <div className="view-scroll">
+            <div className="container">
+
+                {/* Avatar + Name */}
+                <div className="profile-hero">
+                    <div className="profile-avatar">{initials}</div>
+                    <h2 className="profile-name">{userData.name}</h2>
+                    <p className="profile-meta">{userData.level} · {userData.targetDegree} Aspirant</p>
+                    <div className="profile-interests">
+                        {userData.interests.map(i => (
+                            <span key={i} className="tag blue">{i}</span>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Skill Progress */}
+                <div className="section-title">Skill Progress</div>
+                <div className="list-group">
+                    {Object.entries(userData.skillProgress).map(([id, pct]) => {
+                        const skill = skills.find(s => s.id === id);
+                        if (!skill) return null;
+                        return (
+                            <div key={id} className="skill-prog-row" onClick={() => navigate(`/skills/${id}`)}>
+                                <div className="spr-left">
+                                    <span style={{ fontSize: 20 }}>{skill.icon}</span>
+                                    <div>
+                                        <div className="spr-name">{skill.name}</div>
+                                        <div className="spr-cat">{skill.category}</div>
+                                    </div>
+                                </div>
+                                <div className="spr-right">
+                                    <div className="spr-pct" style={{ color: skill.color }}>{pct}%</div>
+                                    <div className="progress-track" style={{ width: 60 }}>
+                                        <div className="progress-fill" style={{ width: `${pct}%`, background: skill.color }} />
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Saved */}
+                <div className="section-title">Saved</div>
+                <div className="list-group">
+                    <div className="list-row" onClick={() => navigate('/universities')}>
+                        <div className="list-row-left">
+                            <div className="list-row-icon" style={{ background: 'var(--blue)' }}>🏛️</div>
+                            <div>
+                                <div style={{ fontWeight: 600 }}>Saved Universities</div>
+                                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{userData.savedUniversities.length} saved</div>
+                            </div>
+                        </div>
+                        <span style={{ color: 'var(--text-tertiary)', fontSize: 22 }}>›</span>
+                    </div>
+                    <div className="list-row" onClick={() => navigate('/programs')}>
+                        <div className="list-row-left">
+                            <div className="list-row-icon" style={{ background: 'var(--purple)' }}>📚</div>
+                            <div>
+                                <div style={{ fontWeight: 600 }}>Saved Programs</div>
+                                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{userData.savedPrograms.length} saved</div>
+                            </div>
+                        </div>
+                        <span style={{ color: 'var(--text-tertiary)', fontSize: 22 }}>›</span>
+                    </div>
+                </div>
+
+                {/* Settings */}
+                <div className="section-title">Settings</div>
+                <div className="list-group">
+                    <div className="list-row">
+                        <div className="list-row-left">
+                            <div className="list-row-icon" style={{ background: 'var(--orange)' }}>🎯</div>
+                            <div style={{ fontWeight: 600 }}>Target Degree</div>
+                        </div>
+                        <span style={{ color: 'var(--blue)', fontSize: 14 }}>{userData.targetDegree} ›</span>
+                    </div>
+                    <div className="list-row">
+                        <div className="list-row-left">
+                            <div className="list-row-icon" style={{ background: 'var(--green)' }}>🎓</div>
+                            <div style={{ fontWeight: 600 }}>Academic Level</div>
+                        </div>
+                        <span style={{ color: 'var(--blue)', fontSize: 14 }}>{userData.level} ›</span>
+                    </div>
+                    <div className="list-row">
+                        <div className="list-row-left">
+                            <div className="list-row-icon" style={{ background: 'var(--red)' }}>🔔</div>
+                            <div style={{ fontWeight: 600 }}>Exam Alerts</div>
+                        </div>
+                        <span style={{ color: 'var(--blue)', fontSize: 14 }}>On ›</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\ProgramDetail.jsx ---
+import { useParams } from 'react-router-dom';
+import { programs } from '../data/data';
+import './DetailView.css';
+
+export default function ProgramDetail() {
+    const { id } = useParams();
+    const p = programs.find(p => p.id === id);
+
+    if (!p) return (
+        <div className="view-scroll"><div className="container empty-state">
+            <div style={{ fontSize: 48 }}>📚</div><p>Program not found.</p>
+        </div></div>
+    );
+
+    return (
+        <div className="view-scroll">
+            <div className="container">
+
+                <div className="detail-banner" style={{ background: `linear-gradient(135deg, ${p.color}, ${p.color}99)` }}>
+                    <div className="detail-banner-level">{p.level}</div>
+                    <h1 className="detail-banner-title">{p.title}</h1>
+                    <p className="detail-banner-sub">{p.duration}</p>
+                </div>
+
+                <div className="detail-section-title">Eligibility</div>
+                <div className="detail-text-card">{p.eligibility}</div>
+
+                <div className="detail-section-title">Entrance Exams</div>
+                <div className="tag-row">
+                    {p.exams.map(e => <span key={e} className="tag" style={{ color: p.color, background: `${p.color}18` }}>{e}</span>)}
+                </div>
+
+                <div className="detail-section-title">Fee Structure</div>
+                <div className="detail-text-card">{p.fees}</div>
+
+                <div className="detail-section-title">Career Opportunities</div>
+                <div className="career-grid">
+                    {p.careers.map(c => (
+                        <div key={c} className="career-chip" style={{ borderLeft: `3px solid ${p.color}` }}>
+                            {c}
+                        </div>
+                    ))}
+                </div>
+
+                <div className="detail-section-title">Top Universities</div>
+                <div className="list-group">
+                    {p.topUnis.map(uni => (
+                        <div key={uni} className="info-row">
+                            <span className="info-icon">🏛️</span>
+                            <div className="info-value">{uni}</div>
+                        </div>
+                    ))}
+                </div>
+
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\ProgramsView.css ---
+.filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.filter-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.filter-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.result-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.program-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    margin-bottom: 14px;
+    display: flex;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s;
+}
+
+.program-card:active {
+    transform: scale(0.98);
+}
+
+.pc-accent {
+    width: 5px;
+    flex-shrink: 0;
+}
+
+.pc-body {
+    padding: 14px 16px;
+    flex: 1;
+}
+
+.pc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.pc-level-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.pc-duration {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.pc-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.pc-eligibility {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.pc-exams {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state p {
+    margin-top: 12px;
+    font-size: 15px;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\ProgramsView.jsx ---
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { programs } from '../data/data';
+import './ProgramsView.css';
+
+const LEVELS = ['All', 'Bachelor', 'Master'];
+
+export default function ProgramsView() {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const initQ = searchParams.get('q') || '';
+    const [query, setQuery] = useState(initQ);
+    const [level, setLevel] = useState('All');
+
+    const filtered = programs.filter(p => {
+        const matchQ = p.title.toLowerCase().includes(query.toLowerCase()) ||
+            p.careers.some(c => c.toLowerCase().includes(query.toLowerCase()));
+        const matchL = level === 'All' || p.level === level;
+        return matchQ && matchL;
+    });
+
+    return (
+        <div className="view-scroll">
+            <div className="container">
+
+                <div className="search-bar">
+                    <span>🔍</span>
+                    <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search by name or career…" />
+                </div>
+
+                {/* Level Filter */}
+                <div className="filter-row">
+                    {LEVELS.map(l => (
+                        <button
+                            key={l}
+                            className={`filter-btn ${level === l ? 'active' : ''}`}
+                            onClick={() => setLevel(l)}
+                        >
+                            {l}
+                        </button>
+                    ))}
+                </div>
+
+                <p className="result-count">{filtered.length} Programs</p>
+
+                {filtered.map(p => (
+                    <div
+                        key={p.id}
+                        className="program-card"
+                        onClick={() => navigate(`/programs/${p.id}`)}
+                    >
+                        <div className="pc-accent" style={{ background: p.color }} />
+                        <div className="pc-body">
+                            <div className="pc-header">
+                                <span className="pc-level-tag" style={{ color: p.color, background: `${p.color}18` }}>
+                                    {p.level}
+                                </span>
+                                <span className="pc-duration">{p.duration}</span>
+                            </div>
+                            <div className="pc-title">{p.title}</div>
+                            <div className="pc-eligibility">Eligibility: {p.eligibility}</div>
+                            <div className="pc-exams">
+                                {p.exams.slice(0, 3).map(e => <span key={e} className="tag">{e}</span>)}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                {filtered.length === 0 && (
+                    <div className="empty-state">
+                        <div style={{ fontSize: 48 }}>🔍</div>
+                        <p>No programs match your search.</p>
+                    </div>
+                )}
+
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\SkillDetail.jsx ---
+import { useParams } from 'react-router-dom';
+import { skills, userData } from '../data/data';
+import './DetailView.css';
+
+export default function SkillDetail() {
+    const { id } = useParams();
+    const s = skills.find(s => s.id === id);
+    const progress = userData.skillProgress[id] ?? 0;
+
+    if (!s) return (
+        <div className="view-scroll"><div className="container empty-state">
+            <div style={{ fontSize: 48 }}>⚡</div><p>Skill not found.</p>
+        </div></div>
+    );
+
+    return (
+        <div className="view-scroll">
+            <div className="container">
+
+                <div className="skill-detail-hero" style={{ background: `linear-gradient(135deg, ${s.color}22, ${s.color}08)`, border: `1px solid ${s.color}33` }}>
+                    <div className="sdh-icon">{s.icon}</div>
+                    <div>
+                        <h1 className="sdh-title">{s.name}</h1>
+                        <p className="sdh-desc">{s.description}</p>
+                    </div>
+                </div>
+
+                {/* Your Progress */}
+                {progress > 0 && (
+                    <>
+                        <div className="detail-section-title">Your Progress</div>
+                        <div className="detail-text-card">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontWeight: 600 }}>
+                                <span>{s.name}</span>
+                                <span style={{ color: s.color }}>{progress}%</span>
+                            </div>
+                            <div className="progress-track">
+                                <div className="progress-fill" style={{ width: `${progress}%`, background: s.color }} />
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* Levels */}
+                <div className="detail-section-title">Levels</div>
+                <div className="levels-row">
+                    {s.levels.map((lvl, i) => (
+                        <div key={lvl} className="level-chip" style={{
+                            background: `${s.color}${i === 0 ? 'ff' : i === 1 ? 'aa' : '66'}`,
+                            color: 'white',
+                            opacity: 0.9
+                        }}>
+                            {lvl}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Topics */}
+                <div className="detail-section-title">Topics Covered</div>
+                <div className="list-group">
+                    {s.topics.map((t, i) => (
+                        <div key={t} className="info-row">
+                            <span className="info-icon" style={{ background: `${s.color}18`, color: s.color, width: 28, height: 28, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700 }}>
+                                {i + 1}
+                            </span>
+                            <div className="info-value">{t}</div>
+                        </div>
+                    ))}
+                </div>
+
+                <button className="detail-cta" style={{ background: s.color }}>
+                    🚀 Start Learning
+                </button>
+
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\SkillsView.css ---
+.skill-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+.skill-card:active {
+    transform: scale(0.98);
+}
+
+.sk-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sk-info {
+    flex: 1;
+}
+
+.sk-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.sk-meta {
+    display: flex;
+    align-items: center;
+}
+
+.sk-chevron {
+    font-size: 22px;
+    color: var(--text-tertiary);
+}
+
+.filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.result-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state p {
+    margin-top: 12px;
+    font-size: 15px;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\SkillsView.jsx ---
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { skills } from '../data/data';
+import './SkillsView.css';
+
+const CATEGORIES = ['All', 'Coding', 'Communication', 'Career'];
+
+export default function SkillsView() {
+    const navigate = useNavigate();
+    const [query, setQuery] = useState('');
+    const [cat, setCat] = useState('All');
+
+    const filtered = skills.filter(s => {
+        const matchQ = s.name.toLowerCase().includes(query.toLowerCase());
+        const matchC = cat === 'All' || s.category === cat;
+        return matchQ && matchC;
+    });
+
+    return (
+        <div className="view-scroll">
+            <div className="container">
+
+                <div className="search-bar">
+                    <span>🔍</span>
+                    <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search skills…" />
+                </div>
+
+                <div className="filter-row">
+                    {CATEGORIES.map(c => (
+                        <button
+                            key={c}
+                            className={`filter-btn ${cat === c ? 'active' : ''}`}
+                            onClick={() => setCat(c)}
+                        >{c}</button>
+                    ))}
+                </div>
+
+                {filtered.map(s => (
+                    <div key={s.id} className="skill-card" onClick={() => navigate(`/skills/${s.id}`)}>
+                        <div className="sk-icon" style={{ background: `${s.color}22`, fontSize: 28 }}>{s.icon}</div>
+                        <div className="sk-info">
+                            <div className="sk-name">{s.name}</div>
+                            <div className="sk-meta">
+                                <span className="tag" style={{ background: `${s.color}18`, color: s.color }}>{s.category}</span>
+                                <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 6 }}>
+                                    {s.levels.length} Level{s.levels.length > 1 ? 's' : ''}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="sk-chevron">›</div>
+                    </div>
+                ))}
+
+                {filtered.length === 0 && (
+                    <div className="empty-state">
+                        <div style={{ fontSize: 48 }}>⚡</div>
+                        <p>No skills match your search.</p>
+                    </div>
+                )}
+
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\UniversitiesView.css ---
+.uv-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: transform 0.18s;
+}
+
+.uv-card:active {
+    transform: scale(0.98);
+}
+
+.uv-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+
+.uv-body {
+    padding: 14px;
+}
+
+.uv-toprow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.uv-type {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.uv-rank {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.uv-name {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.uv-loc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.uv-overview {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+.filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.filter-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.filter-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.result-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state p {
+    margin-top: 12px;
+    font-size: 15px;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\UniversitiesView.jsx ---
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { universities } from '../data/data';
+import './UniversitiesView.css';
+
+const TYPES = ['All', 'Government', 'Private', 'Private (Deemed)'];
+
+export default function UniversitiesView() {
+    const navigate = useNavigate();
+    const [query, setQuery] = useState('');
+    const [type, setType] = useState('All');
+
+    const filtered = universities.filter(u => {
+        const matchQ = u.name.toLowerCase().includes(query.toLowerCase()) ||
+            u.location.toLowerCase().includes(query.toLowerCase());
+        const matchT = type === 'All' || u.type === type;
+        return matchQ && matchT;
+    });
+
+    return (
+        <div className="view-scroll">
+            <div className="container">
+
+                <div className="search-bar">
+                    <span>🔍</span>
+                    <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search by name or location…" />
+                </div>
+
+                <div className="filter-row" style={{ overflowX: 'auto', paddingBottom: 4 }}>
+                    {TYPES.map(t => (
+                        <button
+                            key={t}
+                            className={`filter-btn ${type === t ? 'active' : ''}`}
+                            onClick={() => setType(t)}
+                            style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                        >
+                            {t}
+                        </button>
+                    ))}
+                </div>
+
+                <p className="result-count">{filtered.length} Universities</p>
+
+                {filtered.map(u => (
+                    <div key={u.id} className="uv-card" onClick={() => navigate(`/universities/${u.id}`)}>
+                        <img src={u.image} alt={u.name} className="uv-img" />
+                        <div className="uv-body">
+                            <div className="uv-toprow">
+                                <span className="uv-type" style={{
+                                    color: u.type === 'Government' ? 'var(--green)' : 'var(--blue)',
+                                    background: u.type === 'Government' ? 'rgba(52,199,89,0.12)' : 'rgba(0,122,255,0.12)'
+                                }}>{u.type}</span>
+                                <span className="uv-rank">📊 {u.ranking}</span>
+                            </div>
+                            <div className="uv-name">{u.name}</div>
+                            <div className="uv-loc">📍 {u.location}</div>
+                            <p className="uv-overview">{u.overview.substring(0, 90)}…</p>
+                        </div>
+                    </div>
+                ))}
+
+                {filtered.length === 0 && (
+                    <div className="empty-state">
+                        <div style={{ fontSize: 48 }}>🏛️</div>
+                        <p>No universities match your filter.</p>
+                    </div>
+                )}
+
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\src\views\UniversityDetail.jsx ---
+import { useParams, useNavigate } from 'react-router-dom';
+import { universities } from '../data/data';
+import './DetailView.css';
+
+export default function UniversityDetail() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const u = universities.find(u => u.id === id);
+
+    if (!u) return (
+        <div className="view-scroll"><div className="container empty-state">
+            <div style={{ fontSize: 48 }}>🏛️</div><p>University not found.</p>
+        </div></div>
+    );
+
+    const infoRows = [
+        { icon: '📍', label: 'Location', value: u.location },
+        { icon: '📊', label: 'NIRF Ranking', value: u.ranking },
+        { icon: '🏷️', label: 'Type', value: u.type },
+        { icon: '🎓', label: 'Admission', value: u.admission },
+        { icon: '💼', label: 'Placements', value: u.placements },
+    ];
+
+    return (
+        <div className="view-scroll">
+            <div className="container">
+
+                <div className="detail-hero" style={{ background: u.accentColor }}>
+                    <img src={u.image} alt={u.name} className="detail-hero-img" />
+                    <div className="detail-hero-overlay">
+                        <h1 className="detail-hero-title">{u.shortName}</h1>
+                        <p className="detail-hero-sub">{u.location}</p>
+                    </div>
+                </div>
+
+                <p className="detail-overview">{u.overview}</p>
+
+                <div className="detail-section-title">Quick Info</div>
+                <div className="list-group">
+                    {infoRows.map(r => (
+                        <div key={r.label} className="info-row">
+                            <span className="info-icon">{r.icon}</span>
+                            <div>
+                                <div className="info-label">{r.label}</div>
+                                <div className="info-value">{r.value}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="detail-section-title">Courses Offered</div>
+                <div className="tag-row">
+                    {u.courses.map(c => <span key={c} className="tag blue">{c}</span>)}
+                </div>
+
+                <div className="detail-section-title">Campus Life</div>
+                <div className="detail-text-card">{u.campus}</div>
+
+                <a
+                    href={u.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="detail-cta"
+                    style={{ background: u.accentColor }}
+                >
+                    🌐 Visit Official Website
+                </a>
+
+            </div>
+        </div>
+    );
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\styles\chatbot.css ---
+/* Chatbot Floating Action Button */
+.chatbot-fab {
+    position: fixed;
+    bottom: calc(100px + var(--sab));
+    /* Above tab bar */
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: white;
+    font-size: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    z-index: 200;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.chatbot-fab:active {
+    transform: scale(0.9);
+}
+
+/* Chatbot Overlay Window */
+.chatbot-overlay {
+    position: fixed;
+    top: 100vh;
+    /* Hidden by default at bottom */
+    left: 0;
+    right: 0;
+    height: calc(100vh - 56px - var(--sat));
+    background: var(--bg-color);
+    z-index: 300;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chatbot-overlay.active {
+    transform: translateY(calc(-100vh + 56px + var(--sat)));
+}
+
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--surface-color);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-bottom: 0.5px solid var(--border-color);
+}
+
+.chatbot-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 15px;
+    line-height: 1.4;
+    animation: fade-in 0.3s ease;
+}
+
+.message.bot {
+    align-self: flex-start;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-bottom-left-radius: 4px;
+}
+
+.message.user {
+    align-self: flex-end;
+    background: var(--accent-blue);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.chatbot-input {
+    display: flex;
+    padding: 12px 20px calc(12px + var(--sab)) 20px;
+    background: var(--surface-color);
+    border-top: 0.5px solid var(--border-color);
+}
+
+.chatbot-input input {
+    flex: 1;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-size: 15px;
+    outline: none;
+    color: var(--text-primary);
+}
+
+.chatbot-input input::placeholder {
+    color: var(--text-secondary);
+}
+
+.chatbot-input button {
+    background: var(--accent-blue);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin-left: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\styles\components.css ---
+/* Header Styles */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(56px + var(--sat));
+    padding-top: var(--sat);
+    background: var(--header-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 16px;
+    padding-right: 16px;
+    z-index: 100;
+    border-bottom: 0.5px solid var(--border-color);
+}
+
+.app-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 16px;
+}
+
+/* Bottom Tab Bar Styles */
+.bottom-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(83px + var(--sab));
+    padding-bottom: var(--sab);
+    background: var(--surface-color);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding-top: 8px;
+    z-index: 100;
+    border-top: 0.5px solid var(--border-color);
+    /* Subtle shadow at the top of the tab bar */
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    /* Default inactive color */
+    width: 64px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.tab-item ion-icon {
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+/* Filled icon visible only when active */
+.tab-item ion-icon[name]:not(.outline-icon) {
+    display: none;
+}
+
+.tab-item .outline-icon {
+    display: block;
+}
+
+.tab-item.active {
+    color: var(--accent-blue);
+}
+
+.tab-item.active ion-icon[name]:not(.outline-icon) {
+    display: block;
+}
+
+.tab-item.active .outline-icon {
+    display: none;
+}
+
+.tab-item span {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+/* Typography elements */
+.welcome-header h2 {
+    font-size: 34px;
+    /* iOS Large Title */
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.8px;
+    margin-bottom: 24px;
+}
+
+.welcome-header h2 span {
+    color: var(--accent-blue);
+}
+
+/* Base Form/Input Styles (for future use) */
+.search-bar {
+    background-color: var(--border-color);
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.search-bar ion-icon {
+    color: var(--text-secondary);
+    font-size: 20px;
+    margin-right: 8px;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 17px;
+    width: 100%;
+}
+
+.search-bar input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Base Cards */
+.card {
+    background: var(--surface-color);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+/* Card image styles */
+.card-img {
+    width: calc(100% + 32px);
+    margin: -16px -16px 16px -16px;
+    height: 140px;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+}
+
+.card-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    background: var(--bg-color);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Horizontal Scroll list (for recommendations) */
+.h-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.h-scroll::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+/* Horizontal Scroll Cards */
+.h-scroll .card {
+    min-width: 240px;
+    margin-bottom: 0;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 24px 0 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title .see-all {
+    font-size: 14px;
+    color: var(--accent-blue);
+    font-weight: 500;
+}
+
+/* Specific component: Skill Card */
+.skill-card {
+    display: flex;
+    align-items: center;
+    background: var(--surface-color);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.skill-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    font-size: 24px;
+    color: white;
+}
+
+.skill-info {
+    flex: 1;
+}
+
+.skill-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.skill-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\styles\main.css ---
+/* iOS-style Design System Variables */
+:root {
+    /* Safe area variables to support iPhone notch/dynamic island */
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sat: env(safe-area-inset-top, 0px);
+    
+    /* Apple-style Colors (Light Mode) */
+    --bg-color: #F2F2F7;         /* System Grouped Background */
+    --surface-color: #FFFFFF;    /* Cards/Modules Background */
+    --text-primary: #000000;
+    --text-secondary: #3C3C4399; /* 60% black */
+    --text-tertiary: #3C3C434D;  /* 30% black */
+    --accent-blue: #007AFF;      /* Apple Blue */
+    --accent-purple: #AF52DE;
+    --accent-orange: #FF9500;
+    --border-color: rgba(60, 60, 67, 0.18);
+    --divider-color: rgba(60, 60, 67, 0.29);
+    --header-bg: rgba(255, 255, 255, 0.85);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Dark Mode Variables */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #000000;         
+        --surface-color: #1C1C1E;    
+        --text-primary: #FFFFFF;
+        --text-secondary: #EBEBF599; 
+        --text-tertiary: #EBEBF54D;
+        --accent-blue: #0A84FF;
+        --accent-purple: #BF5AF2;
+        --accent-orange: #FF9F0A;
+        --border-color: rgba(84, 84, 88, 0.65);
+        --divider-color: rgba(84, 84, 88, 0.65);
+        --header-bg: rgba(28, 28, 30, 0.85);
+
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    }
+}
+
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden; /* Prevent body scrolling; scroll inside views */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+}
+
+/* Layout Grid */
+.app-content {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    padding-top: calc(56px + var(--sat)); /* Header height */
+    padding-bottom: calc(83px + var(--sab)); /* Bottom Tab Bar height */
+}
+
+/* Content Views */
+.view {
+    display: none;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
+    padding: 16px;
+    animation: fade-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.view.active {
+    display: block;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding-bottom: 24px;
+}
+
+/* Utility Animations */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\scripts\app.js ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Tab Navigation Logic
+    const tabItems = document.querySelectorAll('.tab-item');
+    const views = document.querySelectorAll('.view');
+    const headerTitle = document.getElementById('header-title');
+
+    // Make sure data is ready
+    const data = window.appData;
+
+    tabItems.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabItems.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            views.forEach(v => v.classList.remove('active'));
+
+            const targetId = tab.getAttribute('data-target');
+            const targetView = document.getElementById(targetId);
+            if (targetView) targetView.classList.add('active');
+
+            const title = tab.getAttribute('data-title');
+            if (headerTitle) headerTitle.textContent = title;
+        });
+    });
+
+    const setSafeAreas = () => {
+        const sab = getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-bottom)');
+        const sat = getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-top)');
+        if (!sab || sab === '0px') document.documentElement.style.setProperty('--sab', '0px');
+        if (!sat || sat === '0px') document.documentElement.style.setProperty('--sat', '0px');
+    };
+    setSafeAreas();
+
+    // ==========================================
+    // RENDER FUNCTIONS
+    // ==========================================
+
+    function renderHome() {
+        const homeView = document.getElementById('view-home').querySelector('.container');
+
+        let html = `
+            <div class="welcome-header">
+                <h2>Welcome back, <br><span>${data.user.name}!</span></h2>
+            </div>
+            
+            <div class="search-bar">
+                <ion-icon name="search-outline"></ion-icon>
+                <input type="text" placeholder="Search programs, universities, skills...">
+            </div>
+
+            <h3 class="section-title">Recommended Programs <span class="see-all">See All</span></h3>
+            <div class="h-scroll">
+                ${data.programs.map(p => `
+                    <div class="card">
+                        <div class="card-title">${p.title}</div>
+                        <div class="card-subtitle">${p.duration} • ${p.level}</div>
+                        <div class="card-tags">
+                            <span class="tag">${p.exams[0]}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <h3 class="section-title">Top Universities <span class="see-all">See All</span></h3>
+            <div class="university-list">
+                ${data.universities.slice(0, 2).map(u => `
+                    <div class="card">
+                        <img src="${u.image}" alt="${u.name}" class="card-img">
+                        <div class="card-title">${u.shortName}</div>
+                        <div class="card-subtitle">${u.location} • ${u.type}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        homeView.innerHTML = html;
+    }
+
+    function renderPrograms() {
+        const programsView = document.getElementById('view-programs').querySelector('.container');
+
+        let html = `
+            <div class="search-bar">
+                <ion-icon name="search-outline"></ion-icon>
+                <input type="text" placeholder="Search Degrees (e.g. B.Tech)">
+            </div>
+            
+            <div class="programs-list">
+                ${data.programs.map(p => `
+                    <div class="card">
+                        <div class="card-title">${p.title}</div>
+                        <div class="card-subtitle">${p.level} • ${p.duration}</div>
+                        <div style="font-size:14px; margin-bottom:8px; line-height:1.4;">
+                            <strong>Eligibility:</strong> ${p.eligibility}<br>
+                            <strong>Top Exams:</strong> ${p.exams.join(', ')}
+                        </div>
+                        <div class="card-tags">
+                            ${p.careerOpts.slice(0, 2).map(c => `<span class="tag">${c}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        programsView.innerHTML = html;
+    }
+
+    function renderUniversities() {
+        const uniView = document.getElementById('view-universities').querySelector('.container');
+
+        let html = `
+            <div class="search-bar">
+                <ion-icon name="search-outline"></ion-icon>
+                <input type="text" placeholder="Search Universities">
+            </div>
+            
+            <div class="uni-list">
+                ${data.universities.map(u => `
+                    <div class="card">
+                        <img src="${u.image}" alt="${u.name}" class="card-img">
+                        <div class="card-title">${u.name}</div>
+                        <div class="card-subtitle">${u.location} • ${u.ranking}</div>
+                        <p style="font-size:14px; color:var(--text-secondary); margin-bottom:12px;">
+                            ${u.overview.substring(0, 80)}...
+                        </p>
+                        <div class="card-tags">
+                            <span class="tag">${u.type}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        uniView.innerHTML = html;
+    }
+
+    function renderSkills() {
+        const skillsView = document.getElementById('view-skills').querySelector('.container');
+
+        let html = `
+            <div class="search-bar">
+                <ion-icon name="search-outline"></ion-icon>
+                <input type="text" placeholder="Search Skills">
+            </div>
+            
+            <div class="skills-list">
+                ${data.skills.items.map(s => `
+                    <div class="skill-card">
+                        <div class="skill-icon" style="background:${s.color}">
+                            <ion-icon name="${s.icon}"></ion-icon>
+                        </div>
+                        <div class="skill-info">
+                            <div class="skill-name">${s.name}</div>
+                            <div class="skill-meta">${s.category} • ${s.levels.length} Levels</div>
+                        </div>
+                        <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);"></ion-icon>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        skillsView.innerHTML = html;
+    }
+
+    function renderProfile() {
+        const profileView = document.getElementById('view-profile').querySelector('.container');
+
+        // Render simple user profile UI
+        let progressHtml = Object.keys(data.user.skillProgress).map(skill => `
+            <div style="margin-bottom: 12px;">
+                <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;">
+                    <span>${skill}</span>
+                    <span style="color:var(--text-secondary)">${data.user.skillProgress[skill]}%</span>
+                </div>
+                <div style="height:6px; background:var(--border-color); border-radius:3px; overflow:hidden;">
+                    <div style="height:100%; width:${data.user.skillProgress[skill]}%; background:var(--accent-blue);"></div>
+                </div>
+            </div>
+        `).join('');
+
+        let html = `
+            <div style="text-align:center; padding: 24px 0;">
+                <div style="width:80px; height:80px; border-radius:40px; background:var(--accent-blue); color:white; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700; margin:0 auto 16px auto;">
+                    ${data.user.name.charAt(0)}
+                </div>
+                <div style="font-size:24px; font-weight:700;">${data.user.name}</div>
+                <div style="color:var(--text-secondary); font-size:15px; margin-top:4px;">
+                    ${data.user.level} • ${data.user.targetDegree} Aspirant
+                </div>
+            </div>
+
+            <h3 class="section-title">Skill Progress</h3>
+            <div class="card" style="margin-bottom:24px;">
+                ${progressHtml}
+            </div>
+
+            <h3 class="section-title">Account Settings</h3>
+            <div class="card">
+                <div style="padding:12px 0; border-bottom:0.5px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                    <span>Saved Universities</span>
+                    <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);"></ion-icon>
+                </div>
+                <div style="padding:12px 0; border-bottom:0.5px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                    <span>Saved Programs</span>
+                    <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);"></ion-icon>
+                </div>
+                <div style="padding:12px 0; display:flex; justify-content:space-between; align-items:center;">
+                    <span>Edit Interests</span>
+                    <ion-icon name="chevron-forward-outline" style="color:var(--text-tertiary);"></ion-icon>
+                </div>
+            </div>
+        `;
+        profileView.innerHTML = html;
+    }
+
+    // Initial render
+    renderHome();
+    renderPrograms();
+    renderUniversities();
+    renderSkills();
+    renderProfile();
+});
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\scripts\chatbot.js ---
+document.addEventListener('DOMContentLoaded', () => {
+    const fabButton = document.getElementById('chatbot-fab');
+    const overlay = document.getElementById('chatbot-overlay');
+    const closeBtn = document.getElementById('chatbot-close');
+    const sendBtn = document.getElementById('chatbot-send');
+    const inputField = document.getElementById('chatbot-input-field');
+    const messagesContainer = document.getElementById('chatbot-messages');
+
+    // Toggle Chatbot
+    fabButton.addEventListener('click', () => {
+        overlay.classList.add('active');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        overlay.classList.remove('active');
+    });
+
+    const addMessage = (text, sender) => {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.textContent = text;
+        messagesContainer.appendChild(msgDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    };
+
+    const handleSend = () => {
+        const text = inputField.value.trim();
+        if (!text) return;
+
+        // Add user message
+        addMessage(text, 'user');
+        inputField.value = '';
+
+        // Simulate AI thinking and responding
+        setTimeout(() => {
+            const lowerText = text.toLowerCase();
+            let response = "I'm still learning! You can ask me about AI course recommendations or university rankings.";
+
+            if (lowerText.includes('course') || lowerText.includes('program')) {
+                response = "Based on your 12th-grade profile, I recommend looking into B.Tech in Computer Science or B.Com. Would you like me to show top universities for these?";
+            } else if (lowerText.includes('university') || lowerText.includes('college')) {
+                response = "IIT Bombay and BITS Pilani are excellent for Engineering. DU is fantastic for Commerce. Check the 'Universities' tab for detailed profiles!";
+            } else if (lowerText.includes('skill')) {
+                response = "Improving 'Python Programming' and 'Communication' are highly recommended. Go to the Skills tab to start your journey.";
+            }
+
+            addMessage(response, 'bot');
+        }, 800);
+    };
+
+    sendBtn.addEventListener('click', handleSend);
+    inputField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSend();
+    });
+});
+
+
+--- FILE: C:\Users\samee\OneDrive\Desktop\Studentsetup\scripts\data.js ---
+/**
+ * data.js
+ * Mock database for Student Setup (SP) App
+ */
+
+const mockData = {
+    user: {
+        name: "Student",
+        level: "12th",
+        targetDegree: "Bachelor",
+        interests: ["Technology", "Business"],
+        savedUniversities: [],
+        savedPrograms: [],
+        skillProgress: {
+            "Python": 45,
+            "Public Speaking": 20
+        }
+    },
+    universities: [
+        {
+            id: "u1",
+            name: "Indian Institute of Technology Bombay",
+            shortName: "IIT Bombay",
+            type: "Government",
+            location: "Mumbai, Maharashtra",
+            ranking: "1 in Engineering (NIRF)",
+            overview: "IIT Bombay is a premier public technical and research university known globally for its engineering programs and vibrant campus life.",
+            admission: "JEE Advanced for UG, GATE for PG.",
+            placements: "Average CTC 21.82 LPA, Highest 3.67 CPA",
+            website: "https://www.iitb.ac.in",
+            image: "https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+        },
+        {
+            id: "u2",
+            name: "University of Delhi",
+            shortName: "DU",
+            type: "Government",
+            location: "New Delhi",
+            ranking: "11 in University (NIRF)",
+            overview: "DU is a collegiate public central university known for its high standards in teaching and research.",
+            admission: "CUET (Common University Entrance Test) for UG and PG.",
+            placements: "Average CTC 6-8 LPA (depends on college)",
+            website: "https://www.du.ac.in",
+            image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+        },
+        {
+            id: "u3",
+            name: "BITS Pilani",
+            shortName: "BITS",
+            type: "Private",
+            location: "Pilani, Rajasthan",
+            ranking: "25 in Engineering (NIRF)",
+            overview: "One of India's top private institutes offering engineering, sciences, and management programs with zero mandated attendance.",
+            admission: "BITSAT exam.",
+            placements: "Average CTC 30.37 LPA",
+            website: "https://www.bits-pilani.ac.in",
+            image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+        },
+        {
+            id: "u4",
+            name: "VIT Vellore",
+            shortName: "VIT",
+            type: "Private",
+            location: "Vellore, Tamil Nadu",
+            ranking: "11 in Engineering (NIRF)",
+            overview: "A highly sought-after private institute with excellent infrastructure and placement records.",
+            admission: "VITEEE exam.",
+            placements: "Average CTC 9.23 LPA, Highest 1.02 CPA",
+            website: "https://vit.ac.in",
+            image: "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+        }
+    ],
+    programs: [
+        {
+            id: "p1",
+            title: "B.Tech in Computer Science",
+            level: "Bachelor",
+            duration: "4 Years",
+            eligibility: "10+2 with Physics, Chemistry, Mathematics (min 60%)",
+            exams: ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE"],
+            feeStructure: "Government: ₹1-2 Lakhs/yr | Private: ₹3-5 Lakhs/yr",
+            careerOpts: ["Software Engineer", "Data Scientist", "AI Developer", "Product Manager"],
+            topUnis: ["IIT Bombay", "BITS Pilani", "VIT Vellore", "NIT Trichy"]
+        },
+        {
+            id: "p2",
+            title: "B.Com (Hons.)",
+            level: "Bachelor",
+            duration: "3 Years",
+            eligibility: "10+2 in any stream (Commerce preferred, min 50-60%)",
+            exams: ["CUET", "IPMAT (for integrated)"],
+            feeStructure: "Government: ₹10k-30k/yr | Private: ₹1-3 Lakhs/yr",
+            careerOpts: ["Accountant", "Financial Analyst", "Tax Consultant", "Investment Banker"],
+            topUnis: ["University of Delhi (SRCC)", "Christ University", "Narsee Monjee"]
+        },
+        {
+            id: "p3",
+            title: "MBA",
+            level: "Master",
+            duration: "2 Years",
+            eligibility: "Bachelor's degree in any discipline (min 50%)",
+            exams: ["CAT", "XAT", "GMAT", "MAT"],
+            feeStructure: "Government (IIMs): ₹15-25 Lakhs | Private: ₹10-30 Lakhs",
+            careerOpts: ["Management Consultant", "Marketing Manager", "Investment Banker"],
+            topUnis: ["IIM Ahmedabad", "IIM Bangalore", "ISB Hyderabad", "FMS Delhi"]
+        }
+    ],
+    skills: {
+        categories: ["Communication", "Coding", "Career"],
+        items: [
+            {
+                id: "s1",
+                category: "Coding",
+                name: "Python Programming",
+                levels: ["Beginner", "Intermediate", "Advanced"],
+                icon: "logo-python",
+                color: "var(--accent-blue)"
+            },
+            {
+                id: "s2",
+                category: "Coding",
+                name: "Web Development",
+                levels: ["Beginner", "Intermediate", "Advanced"],
+                icon: "globe-outline",
+                color: "var(--accent-purple)"
+            },
+            {
+                id: "s3",
+                category: "Communication",
+                name: "Public Speaking",
+                levels: ["Beginner", "Intermediate"],
+                icon: "mic-outline",
+                color: "var(--accent-orange)"
+            },
+            {
+                id: "s4",
+                category: "Communication",
+                name: "English Fluency",
+                levels: ["Beginner", "Intermediate", "Advanced"],
+                icon: "chatbubbles-outline",
+                color: "#ff3b30"
+            },
+            {
+                id: "s5",
+                category: "Career",
+                name: "Resume Building",
+                levels: ["Beginner"],
+                icon: "document-text-outline",
+                color: "#34c759"
+            },
+            {
+                id: "s6",
+                category: "Career",
+                name: "LinkedIn Optimization",
+                levels: ["Beginner", "Intermediate"],
+                icon: "logo-linkedin",
+                color: "#0077b5"
+            }
+        ]
+    }
+};
+
+window.appData = mockData;
+
+
+--- FILE: package.json ---
+{
+  "name": "student-setup",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.13.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "vite": "^7.3.1"
+  }
+}
+
+--- FILE: vite.config.js ---
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  base: '/',
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
+  },
+  server: {
+    port: 5173,
+    strictPort: false,
+  },
+})
+
+
+--- FILE: index.html ---
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SP">
+  <meta name="description" content="Student Setup — All-in-one education & skill platform for Indian students.">
+  <link rel="manifest" href="/manifest.json">
+  <title>Student Setup</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>
+
+--- FILE: README.md ---
+# 🎓 Campus Terminal (Student Setup)
+
+A premium, modern academic management dashboard built with **React** and **Vite**. Features a sleek glassmorphism design, real-time stats, and a full suite of student productivity tools.
+
+## ✨ Key Features
+- **📊 Dynamic Dashboard:** At-a-glance stats including GPA, attendance, and task progress.
+- **📅 Smart Calendar:** Integrated schedule management and upcoming event tracking.
+- **📚 Academic Tracking:** Detailed report views for grades and course progress.
+- **🎨 Premium UI:** Full glassmorphism aesthetic with responsive layouts and smooth micro-animations.
+- **⚡ Performance:** Built on Vite for lightning-fast development and optimized production builds.
+
+## 🛠️ Tech Stack
+- **Frontend:** React 19
+- **Routing:** React Router 7
+- **Styling:** Vanilla CSS with modern Flexbox/Grid and Glassmorphism techniques
+- **Build Tool:** Vite 7
+
+## 🚀 Getting Started
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/samirx7-ux/student-setup.git
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+## 📱 Mobile Preview
+The application is fully responsive and optimized for both desktop and mobile views.
+
+---
+Built with ❤️ for students.
