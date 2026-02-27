@@ -9,7 +9,7 @@ const DEGREES = ['Bachelor', 'Master', 'PhD', 'Diploma'];
 
 export default function ProfileView() {
     const navigate = useNavigate();
-    const { userData, updateProfile, updateSkillProgress, resetUserData } = useUser();
+    const { userData, updateProfile, updateSkillProgress, resetUserData, toggleExamAlerts } = useUser();
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState({});
 
@@ -159,6 +159,19 @@ export default function ProfileView() {
                             <div style={{ fontWeight: 600 }}>Academic Level</div>
                         </div>
                         <span style={{ color: 'var(--blue)', fontSize: 14 }}>{userData.level} ›</span>
+                    </div>
+                    <div className="list-row" onClick={toggleExamAlerts}>
+                        <div className="list-row-left">
+                            <div className="list-row-icon" style={{ background: 'var(--red)' }}>🔔</div>
+                            <div style={{ fontWeight: 600 }}>Exam Alerts</div>
+                        </div>
+                        <span style={{
+                            color: userData.examAlerts ? 'var(--green)' : 'var(--text-secondary)',
+                            fontSize: 14,
+                            fontWeight: 600
+                        }}>
+                            {userData.examAlerts ? 'On ›' : 'Off ›'}
+                        </span>
                     </div>
                     <div className="list-row" onClick={() => {
                         if (window.confirm('Reset all your data to defaults?')) resetUserData();
