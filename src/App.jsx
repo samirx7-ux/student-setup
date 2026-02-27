@@ -11,6 +11,7 @@ import UniversityDetail from './views/UniversityDetail';
 import ProgramDetail from './views/ProgramDetail';
 import SkillDetail from './views/SkillDetail';
 import SearchView from './views/SearchView';
+import AnalyticsView from './views/AnalyticsView';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route index element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<HomeView />} />
             <Route path="/search" element={<SearchView />} />
+            <Route path="/analytics" element={<AnalyticsView />} />
             <Route path="/programs" element={<ProgramsView />} />
             <Route path="/programs/:id" element={<ProgramDetail />} />
             <Route path="/universities" element={<UniversitiesView />} />
