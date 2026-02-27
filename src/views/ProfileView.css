@@ -36,8 +36,87 @@
     gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
+    margin-bottom: 14px;
 }
 
+.profile-edit-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.profile-edit-btn:active {
+    background: var(--border);
+}
+
+/* Edit Form */
+.profile-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+    text-align: left;
+}
+
+.profile-edit-input,
+.profile-edit-select {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    font-size: 15px;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.profile-edit-input:focus,
+.profile-edit-select:focus {
+    border-color: var(--blue);
+}
+
+.profile-edit-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn {
+    flex: 1;
+    padding: 11px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s;
+}
+
+.edit-btn.save {
+    background: var(--blue);
+    color: white;
+}
+
+.edit-btn.cancel {
+    background: var(--surface2);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.edit-btn:active {
+    opacity: 0.75;
+}
+
+/* Skill rows */
 .skill-prog-row {
     display: flex;
     justify-content: space-between;
@@ -45,10 +124,15 @@
     padding: 14px 16px;
     border-bottom: 0.5px solid var(--divider);
     cursor: pointer;
+    transition: background 0.15s;
 }
 
 .skill-prog-row:last-child {
     border-bottom: none;
+}
+
+.skill-prog-row:active {
+    background: var(--surface2);
 }
 
 .spr-left {
